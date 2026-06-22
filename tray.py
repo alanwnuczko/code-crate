@@ -1,3 +1,5 @@
+import sys
+import os
 import threading
 import time
 import ctypes
@@ -5,6 +7,16 @@ import ctypes.wintypes as wt
 from typing import Callable
 
 _u32 = ctypes.windll.user32
+
+
+def _bundle_path(*parts) -> str:
+    """Resolve a path that lives inside the PyInstaller bundle (or source tree)."""
+    if getattr(sys, "frozen", False):
+        base = sys._MEIPASS
+    else:
+        base = os.path.dirname(os.path.abspath(__file__))
+    return os.path.join(base, *parts)
+
 
 def _get_tray_position() -> tuple:
     screen_w = _u32.GetSystemMetrics(0)
@@ -20,8 +32,8 @@ def _get_window_hwnd(window) -> int:
     except Exception:
         pass
 
-    import os
-    pid = os.getpid()
+    import os as _os
+    pid = _os.getpid()
     found = ctypes.c_void_p(0)
     _EPROC = ctypes.WINFUNCTYPE(ctypes.c_bool, wt.HWND, wt.LPARAM)
 
@@ -47,8 +59,6 @@ def _animate_collapse(window, hwnd: int, start_pos: tuple, end_pos: tuple, durat
         progress = min(elapsed / duration, 1.0)
 
         _u32.GetWindowRect(hwnd, ctypes.byref(rect))
-        current_x = rect.left
-        current_y = rect.top
         current_w = rect.right - rect.left
         current_h = rect.bottom - rect.top
 
@@ -107,12 +117,12 @@ def start(window, on_quit: Callable):
 
             rect = wt.RECT()
             _u32.GetWindowRect(hwnd, ctypes.byref(rect))
-            pos = (int(rect.left), int(rect.top))
+            pos  = (int(rect.left), int(rect.top))
             size = (int(rect.right - rect.left), int(rect.bottom - rect.top))
 
-            if pos[0] > -5000 and pos[0] < 30000 and pos[1] > -5000 and pos[1] < 30000:
+            if -5000 < pos[0] < 30000 and -5000 < pos[1] < 30000:
                 saved_pos[0] = pos
-            if size[0] > 100 and size[0] < 10000 and size[1] > 100 and size[1] < 10000:
+            if 100 < size[0] < 10000 and 100 < size[1] < 10000:
                 saved_size[0] = size
 
             tray_pos = _get_tray_position()
@@ -140,7 +150,7 @@ def start(window, on_quit: Callable):
                 is_animating[0] = False
                 return
 
-            restore_pos = saved_pos[0] or default_pos[0]
+            restore_pos  = saved_pos[0]  or default_pos[0]
             restore_size = saved_size[0] or default_size[0]
 
             if not restore_pos or not restore_size:
@@ -158,8 +168,8 @@ def start(window, on_quit: Callable):
 
             tray_pos = _get_tray_position()
             _animate_expand(window, hwnd, tray_pos, restore_pos, restore_size, duration=0.25)
-
-            _u32.SetWindowPos(hwnd, None, restore_pos[0], restore_pos[1], restore_size[0], restore_size[1], 0)
+            _u32.SetWindowPos(hwnd, None, restore_pos[0], restore_pos[1],
+                              restore_size[0], restore_size[1], 0)
             time.sleep(0.05)
 
             visible[0] = True
@@ -194,14 +204,15 @@ def start(window, on_quit: Callable):
             if hwnd:
                 rect = wt.RECT()
                 _u32.GetWindowRect(hwnd, ctypes.byref(rect))
-                default_pos[0] = (int(rect.left), int(rect.top))
+                default_pos[0]  = (int(rect.left), int(rect.top))
                 default_size[0] = (int(rect.right - rect.left), int(rect.bottom - rect.top))
-                saved_pos[0] = default_pos[0]
-                saved_size[0] = default_size[0]
+                saved_pos[0]    = default_pos[0]
+                saved_size[0]   = default_size[0]
 
+            icon_path = _bundle_path("assets", "tray.ico")
             icon = pystray.Icon(
                 "CodeCrate",
-                Image.open("assets/tray.ico"),
+                Image.open(icon_path),
                 "CodeCrate",
                 menu=pystray.Menu(
                     pystray.MenuItem(_label, _toggle, default=True),

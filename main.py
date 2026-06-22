@@ -9,10 +9,9 @@ import webview
 from bridge import Bridge
 from tray import start as start_tray
 from win32_desktop import pin_window_to_desktop
+from config import HTML_FILE, STATE_FILE
 
-BASE      = os.path.dirname(os.path.abspath(__file__))
-HTML_FILE = os.path.join(BASE, "index.html")
-STATE     = os.path.join(BASE, "state.json")
+STATE = STATE_FILE
 
 _u32 = ctypes.windll.user32
 _gdi = ctypes.windll.gdi32
