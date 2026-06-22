@@ -14,8 +14,8 @@ pip install pywebview pillow pystray
 ---
 
 <p align="center">
-  <img src="assets/readme/1.png" width="24.65%" />
-  <img src="assets/readme/2.png" width="24.65%" />
-  <img src="assets/readme/3.png" width="24.65%" />
-  <img src="assets/readme/4.png" width="24.65%" />
+  <img src="assets/readme/1.png" width="22.5%" />
+  <img src="assets/readme/2.png" width="22.5%" />
+  <img src="assets/readme/3.png" width="22.5%" />
+  <img src="assets/readme/4.png" width="22.5%" />
 </p>
