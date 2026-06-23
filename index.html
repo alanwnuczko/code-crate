@@ -8,6 +8,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/hint/show-hint.min.css">
 <link rel="stylesheet" href="css/style.css">
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.css">
@@ -29,6 +30,9 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/edit/matchbrackets.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/edit/closebrackets.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/selection/active-line.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/hint/show-hint.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/fold/xml-fold.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/edit/closetag.min.js"></script>
 
 </head>
 <body>
@@ -95,13 +99,15 @@
     <div id="action-row">
       <div id="cursor-pos">Ln <b id="ln">1</b>  Col <b id="col">1</b></div>
       <div class="btn-group">
-        <button class="btn btn-open-file" onclick="openFile()" title="Open file (Ctrl+O)">open</button>
+        <button class="btn btn-new"       onclick="newFile()"   title="New file (Ctrl+N)">new</button>
         <div class="btn-sep"></div>
-        <button class="btn btn-clear" onclick="clearAll()">clear</button>
+        <button class="btn btn-open-file" onclick="openFile()"  title="Open file (Ctrl+O)">open</button>
         <div class="btn-sep"></div>
-        <button class="btn btn-copy"  onclick="copyAll()">copy</button>
+        <button class="btn btn-clear"     onclick="clearAll()">clear</button>
         <div class="btn-sep"></div>
-        <button class="btn btn-save"  onclick="saveFile()">save</button>
+        <button class="btn btn-copy"      onclick="copyAll()">copy</button>
+        <div class="btn-sep"></div>
+        <button class="btn btn-save"      onclick="saveFile()">save</button>
       </div>
     </div>
   </div>

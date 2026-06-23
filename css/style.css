@@ -178,7 +178,7 @@
 html, body {
   height: 100%;
   background: var(--bg);
-  color: var(--txt);
+  color: var(--txt) !important;
   font-family: var(--sans);
   overflow: hidden;
   user-select: none;
@@ -220,7 +220,7 @@ html, body {
   background: var(--bg-sunken);
   border: 1px solid var(--border);
   border-radius: 4px;
-  color: var(--txt);
+  color: var(--txt) !important;
   font-family: var(--sans);
   font-size: 12px;
   padding: 3px 20px 3px 8px;
@@ -245,7 +245,7 @@ html, body {
 #lang-select option,
 #theme-select option {
   background: var(--bg-raised);
-  color: var(--txt);
+  color: var(--txt) !important;
 }
 
 #ext-badge {
@@ -537,19 +537,19 @@ html, body {
   scroll-behavior: smooth;
   -webkit-overflow-scrolling: touch;
 }
-.CodeMirror-scroll::-webkit-scrollbar { width: 12px; height: 12px; }
-.CodeMirror-scroll::-webkit-scrollbar-track { background: transparent; }
-.CodeMirror-scroll::-webkit-scrollbar-thumb {
+.CodeMirror-scroll::-webkit-scrollbar, .CodeMirror-hints::-webkit-scrollbar { width: 12px; height: 12px; }
+.CodeMirror-scroll::-webkit-scrollbar-track, .CodeMirror-hints::-webkit-scrollbar-track { background: transparent; }
+.CodeMirror-scroll::-webkit-scrollbar-thumb, .CodeMirror-hints::-webkit-scrollbar-thumb {
   background: linear-gradient(180deg, var(--border-hi), var(--border));
   border-radius: 12px;
   border: 3px solid transparent;
   background-clip: padding-box;
   transition: background 160ms ease;
 }
-.CodeMirror-scroll::-webkit-scrollbar-thumb:hover {
+.CodeMirror-scroll::-webkit-scrollbar-thumb:hover, .CodeMirror-hints::-webkit-scrollbar-thumb:hover {
   background: linear-gradient(180deg, var(--border), var(--border-hi));
 }
-.CodeMirror-scroll::-webkit-scrollbar-button { display: none; }
+.CodeMirror-scroll::-webkit-scrollbar-button, .CodeMirror-hints::-webkit-scrollbar-button { display: none; }
 
 .CodeMirror-gutters {
   background: var(--bg-raised) !important;
@@ -619,7 +619,7 @@ html, body {
   user-select: text;
 }
 #export-dir::placeholder { color: var(--txt-3); }
-#export-dir:focus { border-color: var(--teal); color: var(--txt); }
+#export-dir:focus { border-color: var(--teal); color: var(--txt) !important; }
 
 #btn-pick {
   flex-shrink: 0;
@@ -663,7 +663,7 @@ html, body {
 #filename-input::placeholder { color: var(--txt-3); }
 #filename-input:focus {
   background: var(--bg-sunken);
-  color: var(--txt);
+  color: var(--txt) !important;
   border: none;
 }
 
@@ -719,7 +719,7 @@ html, body {
   cursor: pointer;
 }
 .btn:hover {
-  color: var(--txt);
+  color: var(--txt) !important;
   border-color: var(--border-hi);
   background: var(--bg-raised);
 }
@@ -735,7 +735,7 @@ html, body {
 .btn-clear:hover,
 .btn-copy:hover,
 .btn-save:hover {
-  color: var(--txt);
+  color: var(--txt) !important;
   border-color: var(--border-hi);
   background: var(--bg-raised);
 }
@@ -772,4 +772,56 @@ html, body {
 #toast.inf { 
   border-color: var(--border);
   color: var(--txt-2);
+}
+
+/* ── Autocomplete hints ── */
+.CodeMirror-hints {
+  background: var(--bg-raised);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 4px 0;
+  font-family: var(--mono);
+  font-size: 13px;
+  max-height: 220px;
+  overflow-y: auto;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.25);
+  z-index: 1000;
+}
+.CodeMirror-hint {
+  padding: 2px 12px;
+  color: var(--txt-2);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  white-space: nowrap;
+  line-height: 1.5;
+}
+.CodeMirror-hint-active {
+  background: var(--teal-dim) !important;
+  color: var(--txt) !important;
+}
+.CodeMirror-hint-active .hint-label {
+  color: var(--txt-3) !important;
+}
+.hint-icon {
+  width: 10px;
+  height: 10px;
+  display: inline-flex;
+  border: 1px solid var(--teal);
+  border-radius: 2px;
+  background: transparent;
+  flex-shrink: 0;
+}
+.CodeMirror-hint-active .hint-icon {
+  background: var(--teal);
+}
+.hint-name {
+  flex: 1;
+}
+.hint-label {
+  color: var(--txt-3);
+  font-size: 11px;
+  margin-left: auto;
+  padding-left: 20px;
 }
