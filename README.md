@@ -16,7 +16,7 @@
 
 ## In-editor hints
 
-Shorthand expansion for faster coding directly inside the editor.
+Speed up development with inline code expansions.
 
 Supported languages:
 - HTML
@@ -33,7 +33,7 @@ Type `!` and press Enter to instantly generate a full HTML boilerplate.
 
 ### Inline expansions
 
-Convert shorthand expressions into full code structures while typing.
+Expand abbreviations into complete code structures as you type.
 
 <p align="center">
   <img src="assets/readme/2.png" width="47.5%" />
@@ -48,13 +48,13 @@ Convert shorthand expressions into full code structures while typing.
 | Linux | v1.2 | [CodeCrate.tar.xz](https://github.com/alanwnuczko/code-crate/releases/tag/Linux) |
 
 ## Python Dependencies
-```bash
+```shell
 pip install pywebview pillow pystray
 ```
 
 ## APT Dependencies
 
-```bash
+```shell
 sudo apt update
 sudo apt install -y \
     python3 python3-pip python3-venv \
