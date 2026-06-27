@@ -44,8 +44,8 @@ Expand abbreviations into complete code structures as you type.
 
 | Platform | Version | Download |
 |----------|----------|----------|
-| Windows 11 | v1.2 | [CodeCrate.zip](https://github.com/alanwnuczko/code-crate/releases/tag/Windows) |
-| Linux | v1.2 | [CodeCrate.tar.xz](https://github.com/alanwnuczko/code-crate/releases/tag/Linux) |
+| Windows 11 | v1.2 | [CodeCrate.zip](https://github.com/alanwnuczko/code-crate/releases/tag/v1.2) |
+| Linux | v1.2 | [CodeCrate.tar.xz](https://github.com/alanwnuczko/code-crate/releases/tag/v1.2) |
 
 ## Python Dependencies
 ```shell
