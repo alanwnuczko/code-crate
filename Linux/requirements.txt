@@ -1,0 +1,4 @@
+pywebview>=4.0
+Pillow>=9.0
+pystray>=0.19
+PyGObject>=3.42

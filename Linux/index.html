@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CodeCrate</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/hint/show-hint.min.css">
+<link rel="stylesheet" href="../css/style.css">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/javascript/javascript.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/python/python.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/clike/clike.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/rust/rust.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/go/go.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/shell/shell.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/css/css.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/xml/xml.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/htmlmixed/htmlmixed.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/sql/sql.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/php/php.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/ruby/ruby.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/swift/swift.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/yaml/yaml.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/edit/matchbrackets.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/edit/closebrackets.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/selection/active-line.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/hint/show-hint.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/fold/xml-fold.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/edit/closetag.min.js"></script>
+
+</head>
+<body>
+<div id="app">
+
+  <div id="topbar" class="pywebview-drag-region tech-header">
+    <div class="header-doc-group">
+      <input id="filename-input" class="doc-title-input" type="text" placeholder="snippet" spellcheck="false" autocomplete="off" maxlength="80">
+      <div class="doc-ext-wrapper" title="Click to change language">
+        <span id="filename-ext" class="doc-title-ext">.js</span>
+        <select id="lang-select" class="ext-hidden-select" onchange="onLangChange(this.value)">
+          <option value="javascript">JavaScript</option>
+          <option value="typescript">TypeScript</option>
+          <option value="python">Python</option>
+          <option value="c_cpp">C / C++</option>
+          <option value="java">Java</option>
+          <option value="csharp">C#</option>
+          <option value="rust">Rust</option>
+          <option value="go">Go</option>
+          <option value="shell">Bash / Shell</option>
+          <option value="css">CSS</option>
+          <option value="html">HTML</option>
+          <option value="sql">SQL</option>
+          <option value="php">PHP</option>
+          <option value="ruby">Ruby</option>
+          <option value="swift">Swift</option>
+          <option value="yaml">YAML</option>
+          <option value="text">Plain Text</option>
+        </select>
+      </div>
+      <div id="ext-badge" style="display: none;">.js</div>
+    </div>
+
+    <div class="header-actions">
+      <button class="tool-btn" onclick="openFile()" title="Open file (Ctrl+O)">Open</button>
+      <button class="tool-btn" onclick="onRequestClear(event)" title="Clear editor">Clear</button>
+      <button class="tool-btn" onclick="copyAll()" title="Copy snippet">Copy</button>
+      <button class="tool-btn primary-tool-btn" onclick="saveFile()" title="Save snippet (Ctrl+S)">Save</button>
+    </div>
+  </div>
+
+  <div id="tabbar" class="doc-tab-bar pywebview-drag-region"></div>
+
+  <div id="editor-wrap">
+    <textarea id="editor"></textarea>
+  </div>
+
+  <div id="footer" class="pywebview-drag-region tech-footer">
+    <div class="footer-path-row">
+      <span class="path-label">Export to</span>
+      <div class="path-input-wrap">
+        <input id="export-dir" class="path-input" type="text" placeholder="~/snippets" spellcheck="false" autocomplete="off">
+      </div>
+      <button id="btn-pick" class="path-browse-btn" onclick="pickFolder()" title="Browse for folder">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>
+        <span>Browse</span>
+      </button>
+    </div>
+    <div class="footer-status-row">
+      <div class="status-left">
+        <div id="cursor-pos">Ln <b id="ln">1</b>, Col <b id="col">1</b></div>
+      </div>
+      <div class="status-right">
+        <span class="theme-label">Theme</span>
+        <div class="theme-dropdown-wrap">
+          <select id="theme-select" class="status-select" onchange="onThemeChange(this.value)" title="Theme">
+            <option value="dusk">Ember</option>
+            <option value="quartz">Quartz</option>
+            <option value="monarch">Monarch</option>
+            <option value="aurora">Aurora</option>
+            <option value="grove">Grove</option>
+            <option value="rose">Rose</option>
+            <option value="contrast">Contrast</option>
+            <option value="nord">Nord</option>
+            <option value="dracula">Dracula</option>
+          </select>
+          <svg class="theme-chevron" width="10" height="6" viewBox="0 0 10 6" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M1 1l4 4 4-4"/></svg>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="clear-confirm-modal" class="app-confirm-modal hidden">
+    <div class="app-confirm-box">
+      <div class="popover-text">Unsaved changes. Clear editor?</div>
+      <div class="popover-buttons">
+        <button class="btn cancel-btn" onclick="cancelClear()">Cancel</button>
+        <button class="btn confirm-btn" onclick="confirmClear()">Clear</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+<div id="toast"></div>
+
+<script src="../js/main.js"></script>
+</body>
+</html>
