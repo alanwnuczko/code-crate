@@ -51,18 +51,52 @@ Expand abbreviations into complete code structures as you type.
 | Windows 11 | v2.1 | [CodeCrate.zip](https://github.com/alanwnuczko/code-crate/releases/tag/v2.1) |
 | Linux | v2.1 | [CodeCrate.tar.xz](https://github.com/alanwnuczko/code-crate/releases/tag/v2.1) |
 
-## Python Dependencies
-```shell
-pip install pywebview pillow pystray
-```
-or
-```shell
-pip install -r requirements.txt
+---
+
+## Build Guide
+#### Windows Dependencies
+```bash
+pip install pyinstaller pywebview pystray pillow pywin32
 ```
 
-## APT Dependencies
-
-```shell
+#### Linux Dependencies
+```bash
+# Ubuntu/Debian system dependencies
 sudo apt update
 sudo apt install -y python3-gi python3-gi-cairo gir1.2-gtk-3.0 gir1.2-webkit2-4.1 libgirepository1.0-dev gcc libcairo2-dev pkg-config python3-dev
+
+# Python dependencies
+pip install pyinstaller pywebview pystray pillow pygobject
+```
+
+### Building on Windows
+
+#### Run PyInstaller
+Execute the following command from the project root (`code-crate`):
+
+```powershell
+pyinstaller --noconfirm --onedir --windowed `
+  --name "CodeCrate" `
+  --icon "assets/tray.ico" `
+  --add-data "Windows/index.html;." `
+  --add-data "assets;assets" `
+  --add-data "css;css" `
+  --add-data "js;js" `
+  "Windows/main.py"
+```
+
+### Building on Linux
+
+#### Run PyInstaller
+Execute the following command from the project root (`code-crate`):
+
+```bash
+pyinstaller --noconfirm --onedir --windowed \
+  --name "CodeCrate" \
+  --icon "assets/tray.png" \
+  --add-data "Linux/index.html:." \
+  --add-data "assets:assets" \
+  --add-data "css:css" \
+  --add-data "js:js" \
+  "Linux/main.py"
 ```
