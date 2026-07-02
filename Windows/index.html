@@ -7,7 +7,11 @@
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<<<<<<< HEAD
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+=======
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+>>>>>>> e0606f38c3d0c50b507c19ef778500e4bc8b82f3
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/hint/show-hint.min.css">
 <link rel="stylesheet" href="../css/style.css">
 
@@ -38,6 +42,7 @@
 <body>
 <div id="app">
 
+<<<<<<< HEAD
   <div id="topbar" class="tech-header">
     <div class="header-doc-group">
       <input id="filename-input" class="doc-title-input" type="text" placeholder="snippet" spellcheck="false" autocomplete="off" maxlength="80">
@@ -79,10 +84,49 @@
 
   <div id="tabbar" class="doc-tab-bar"></div>
 
+=======
+  <div id="topbar" class="pywebview-drag-region">
+    <select id="lang-select" onchange="onLangChange(this.value)">
+      <option value="javascript">JavaScript</option>
+      <option value="typescript">TypeScript</option>
+      <option value="python">Python</option>
+      <option value="c_cpp">C / C++</option>
+      <option value="java">Java</option>
+      <option value="csharp">C#</option>
+      <option value="rust">Rust</option>
+      <option value="go">Go</option>
+      <option value="shell">Bash / Shell</option>
+      <option value="css">CSS</option>
+      <option value="html">HTML</option>
+      <option value="sql">SQL</option>
+      <option value="php">PHP</option>
+      <option value="ruby">Ruby</option>
+      <option value="swift">Swift</option>
+      <option value="yaml">YAML</option>
+      <option value="text">Plain Text</option>
+    </select>
+
+    <select id="theme-select" onchange="onThemeChange(this.value)" title="Theme">
+      <option value="dusk">Ember</option>
+      <option value="paper">Paper</option>
+      <option value="aurora">Aurora</option>
+      <option value="grove">Grove</option>
+      <option value="rose">Rose</option>
+      <option value="contrast">Contrast</option>
+      <option value="nord">Nord</option>
+      <option value="solarized">Solarized</option>
+      <option value="dracula">Dracula</option>
+    </select>
+
+    <div id="ext-badge">.js</div>
+  </div>
+
+>>>>>>> e0606f38c3d0c50b507c19ef778500e4bc8b82f3
   <div id="editor-wrap">
     <textarea id="editor"></textarea>
   </div>
 
+<<<<<<< HEAD
   <div id="footer" class="tech-footer">
     <div class="footer-path-row">
       <span class="path-label">Export to</span>
@@ -138,6 +182,38 @@
       <div class="popover-buttons">
         <button class="btn cancel-btn" onclick="cancelCloseTab()">Cancel</button>
         <button class="btn confirm-btn" onclick="confirmCloseTab()">Close</button>
+=======
+  <div id="footer" class="pywebview-drag-region">
+    <div id="path-row">
+      <label>dest</label>
+      <input id="export-dir" type="text" placeholder="C:\Users\you\snippets"
+             spellcheck="false" autocomplete="off">
+      <button id="btn-pick" onclick="pickFolder()" title="Browse for folder">
+        <svg width="13" height="13" viewBox="0 0 13 13" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M1 3C1 2.448 1.448 2 2 2H4.879L5.94 3.06A1 1 0 0 0 6.647 3.5H11C11.552 3.5 12 3.948 12 4.5V10C12 10.552 11.552 11 11 11H2C1.448 11 1 10.552 1 10V3Z"
+                stroke="#a1a1aa" stroke-width="1.1" fill="none"/>
+        </svg>
+      </button>
+      <div id="filename-wrap">
+        <input id="filename-input" type="text" placeholder="snippet"
+               spellcheck="false" autocomplete="off" maxlength="80">
+        <span id="filename-ext">.js</span>
+      </div>
+    </div>
+
+    <div id="action-row">
+      <div id="cursor-pos">Ln <b id="ln">1</b>  Col <b id="col">1</b></div>
+      <div class="btn-group">
+        <button class="btn btn-new"       onclick="newFile()"   title="New file (Ctrl+N)">new</button>
+        <div class="btn-sep"></div>
+        <button class="btn btn-open-file" onclick="openFile()"  title="Open file (Ctrl+O)">open</button>
+        <div class="btn-sep"></div>
+        <button class="btn btn-clear"     onclick="clearAll()">clear</button>
+        <div class="btn-sep"></div>
+        <button class="btn btn-copy"      onclick="copyAll()">copy</button>
+        <div class="btn-sep"></div>
+        <button class="btn btn-save"      onclick="saveFile()">save</button>
+>>>>>>> e0606f38c3d0c50b507c19ef778500e4bc8b82f3
       </div>
     </div>
   </div>

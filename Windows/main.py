@@ -34,6 +34,7 @@ SWP_NOZORDER = 0x0004
 
 
 def _resolve_hwnd(window) -> int:
+<<<<<<< HEAD
     cached = getattr(window, '_cached_hwnd', None)
     if cached:
         return int(cached)
@@ -42,6 +43,11 @@ def _resolve_hwnd(window) -> int:
         hwnd = window.get_current_window()
         if hwnd:
             setattr(window, '_cached_hwnd', int(hwnd))
+=======
+    try:
+        hwnd = window.get_current_window()
+        if hwnd:
+>>>>>>> e0606f38c3d0c50b507c19ef778500e4bc8b82f3
             return int(hwnd)
     except Exception:
         pass
@@ -59,10 +65,14 @@ def _resolve_hwnd(window) -> int:
         return True
 
     _u32.EnumWindows(_EPROC(_cb), 0)
+<<<<<<< HEAD
     res = int(found) if found else 0
     if res:
         setattr(window, '_cached_hwnd', res)
     return res
+=======
+    return int(found) if found else 0
+>>>>>>> e0606f38c3d0c50b507c19ef778500e4bc8b82f3
 
 
 def _round_window_corners(hwnd: int, radius: int = 16):
@@ -130,11 +140,25 @@ def main():
 
     hwnd_ref = [None]
 
+<<<<<<< HEAD
+=======
+    def on_shown():
+        time.sleep(0.3)
+        hwnd = _resolve_hwnd(window)
+        if hwnd:
+            hwnd_ref[0] = hwnd
+            pin_window_to_desktop(hwnd)
+            time.sleep(0.1)
+            _round_window_corners(hwnd, radius=16)
+            _hide_from_taskbar(hwnd)
+
+>>>>>>> e0606f38c3d0c50b507c19ef778500e4bc8b82f3
     def quit_app(icon=None):
         if icon:
             icon.stop()
         window.destroy()
 
+<<<<<<< HEAD
     set_pin = start_tray(window, quit_app)
     bridge.set_pin_callback(set_pin)
 
@@ -157,6 +181,9 @@ def main():
                 window.evaluate_js(f"window.__setPinUI && window.__setPinUI({str(should_pin).lower()})")
             except Exception:
                 pass
+=======
+    start_tray(window, quit_app)
+>>>>>>> e0606f38c3d0c50b507c19ef778500e4bc8b82f3
     webview.start(on_shown, debug=False)
 
 

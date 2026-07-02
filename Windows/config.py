@@ -10,10 +10,14 @@ _APP_NAME   = "CodeCrate"
 _USER_DIR   = os.path.join(os.environ.get("APPDATA", os.path.expanduser("~")), _APP_NAME)
 os.makedirs(_USER_DIR, exist_ok=True)
 
+<<<<<<< HEAD
 HTML_FILE = os.path.join(_BUNDLE_DIR, "index.html")
 if not os.path.exists(HTML_FILE):
     _alt = os.path.join(_BUNDLE_DIR, "Windows", "index.html")
     if os.path.exists(_alt):
         HTML_FILE = _alt
+=======
+HTML_FILE  = os.path.join(_BUNDLE_DIR, "index.html")
+>>>>>>> e0606f38c3d0c50b507c19ef778500e4bc8b82f3
 
 STATE_FILE = os.path.join(_USER_DIR, "state.json")

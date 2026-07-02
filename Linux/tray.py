@@ -12,10 +12,14 @@ def _bundle_path(*parts) -> str:
         base = Path(sys._MEIPASS)
     else:
         base = Path(__file__).resolve().parent
+<<<<<<< HEAD
     target = base.joinpath(*parts)
     if target.exists():
         return str(target)
     return str(base.parent.joinpath(*parts))
+=======
+    return str(base.joinpath(*parts))
+>>>>>>> e0606f38c3d0c50b507c19ef778500e4bc8b82f3
 
 
 def _load_tray_icon():
@@ -29,6 +33,7 @@ def _load_tray_icon():
     ico_path = _bundle_path("assets", "tray.ico")
     png_path = _bundle_path("assets", "tray.png")
 
+<<<<<<< HEAD
     if os.path.isfile(png_path):
         return Image.open(png_path)
 
@@ -41,6 +46,25 @@ def _load_tray_icon():
             pass
         return img
 
+=======
+    # Prefer a pre-converted PNG if it exists
+    if os.path.isfile(png_path):
+        return Image.open(png_path)
+
+    # Fall back to .ico — Pillow reads it fine and pystray can use the PIL Image
+    if os.path.isfile(ico_path):
+        img = Image.open(ico_path)
+        # Convert to RGBA PNG in-memory for maximum compatibility
+        img = img.convert("RGBA")
+        # Also save a .png alongside so future launches are faster
+        try:
+            img.save(png_path, format="PNG")
+        except OSError:
+            pass  # Read-only bundle, no problem
+        return img
+
+    # Last resort: generate a tiny coloured square
+>>>>>>> e0606f38c3d0c50b507c19ef778500e4bc8b82f3
     img = Image.new("RGBA", (64, 64), (255, 184, 107, 255))
     return img
 

@@ -1,5 +1,8 @@
+<<<<<<< HEAD
 import ctypes
 import ctypes.wintypes as wt
+=======
+>>>>>>> e0606f38c3d0c50b507c19ef778500e4bc8b82f3
 import json
 import os
 
@@ -29,8 +32,11 @@ DEFAULT_STATE = {
     "code":       "",
     "export_dir": "",
     "filename":   "",
+<<<<<<< HEAD
     "fontSize":   13,
     "pinned":     True,
+=======
+>>>>>>> e0606f38c3d0c50b507c19ef778500e4bc8b82f3
 }
 
 _EXT_TO_LANG = {v: k for k, v in EXTENSIONS.items()}
@@ -54,14 +60,20 @@ class Bridge:
     def __init__(self, state_path: str):
         self._state_path = state_path
         self._window     = None
+<<<<<<< HEAD
         self._pin_callback = None
+=======
+>>>>>>> e0606f38c3d0c50b507c19ef778500e4bc8b82f3
 
     def set_window(self, window):
         self._window = window
 
+<<<<<<< HEAD
     def set_pin_callback(self, callback):
         self._pin_callback = callback
 
+=======
+>>>>>>> e0606f38c3d0c50b507c19ef778500e4bc8b82f3
     def pick_folder(self) -> dict:
         if not self._window:
             return {"ok": False, "error": "Window not ready"}
@@ -148,6 +160,7 @@ class Bridge:
             return {"ok": True, "path": dest}
         except OSError as exc:
             return {"ok": False, "error": str(exc)}
+<<<<<<< HEAD
 
     def toggle_pin(self, pinned: bool) -> dict:
         try:
@@ -237,3 +250,5 @@ class Bridge:
             return {"ok": False}
         except Exception:
             return {"ok": False}
+=======
+>>>>>>> e0606f38c3d0c50b507c19ef778500e4bc8b82f3
