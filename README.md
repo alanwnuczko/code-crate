@@ -100,3 +100,35 @@ pyinstaller --noconfirm --onedir --windowed \
   --add-data "js:js" \
   "Linux/main.py"
 ```
+
+### Building on Windows
+
+#### Run PyInstaller
+Execute the following command from the project root (`code-crate`):
+
+```powershell
+pyinstaller --noconfirm --onedir --windowed `
+  --name "CodeCrate" `
+  --icon "assets/tray.ico" `
+  --add-data "Windows/index.html;." `
+  --add-data "assets;assets" `
+  --add-data "css;css" `
+  --add-data "js;js" `
+  "Windows/main.py"
+```
+
+### Building on Linux
+
+#### Run PyInstaller
+Execute the following command from the project root (`code-crate`):
+
+```bash
+pyinstaller --noconfirm --onedir --windowed \
+  --name "CodeCrate" \
+  --icon "assets/tray.png" \
+  --add-data "Linux/index.html:." \
+  --add-data "assets:assets" \
+  --add-data "css:css" \
+  --add-data "js:js" \
+  "Linux/main.py"
+```
