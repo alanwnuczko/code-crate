@@ -14,8 +14,8 @@
   <img src="assets/readme/2.png">
 </p>
 <p align="center">
-  <img src="assets/readme/3.png" width="47.5%" />
-  <img src="assets/readme/5.png" width="47.5%" />
+  <img src="assets/readme/3.png" width="49.5%" />
+  <img src="assets/readme/5.png" width="49.5%" />
 </p>
 
 ## In-editor hints
