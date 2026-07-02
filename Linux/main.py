@@ -5,11 +5,7 @@ from pathlib import Path
 import gi
 gi.require_version("Gtk", "3.0")
 gi.require_version("Gdk", "3.0")
-<<<<<<< HEAD
 from gi.repository import Gtk, Gdk, GLib
-=======
-from gi.repository import Gtk, Gdk, GLib  # type: ignore[attr-defined]
->>>>>>> e0606f38c3d0c50b507c19ef778500e4bc8b82f3
 try:
     Gtk.init()
 except TypeError:
@@ -23,15 +19,6 @@ from config import HTML_FILE, STATE_FILE
 
 STATE = STATE_FILE
 
-<<<<<<< HEAD
-=======
-# ---------------------------------------------------------------------------
-# JavaScript injected after the page loads.
-# Implements window-drag from the topbar and footer via the Python bridge.
-# Uses capture-phase listeners so they fire before any stopPropagation
-# calls in the app's own main.js handlers.
-# ---------------------------------------------------------------------------
->>>>>>> e0606f38c3d0c50b507c19ef778500e4bc8b82f3
 _DRAG_JS = r"""
 (function() {
     if (window.__ccDragSetup) return;
@@ -157,13 +144,7 @@ def main():
 
     def on_shown():
         time.sleep(0.5)
-<<<<<<< HEAD
         GLib.idle_add(_force_gtk_decoration)
-=======
-        # 1. Force GTK window decoration (native title bar → native drag)
-        GLib.idle_add(_force_gtk_decoration)
-        # 2. Inject JS-bridge drag on topbar/footer as additional mechanism
->>>>>>> e0606f38c3d0c50b507c19ef778500e4bc8b82f3
         time.sleep(0.2)
         window.evaluate_js(_DRAG_JS)
         print("[window] Drag JS injected")

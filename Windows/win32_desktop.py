@@ -1,7 +1,6 @@
 import ctypes
 import ctypes.wintypes as wt
 import time
-<<<<<<< HEAD
 import threading
 
 _pending_repin_hwnd = None
@@ -28,14 +27,6 @@ _GWL_EXSTYLE      = -20
 _GWLP_WNDPROC     = -4
 _WS_POPUP         = 0x80000000
 _WS_CHILD         = 0x40000000
-=======
-
-_u32   = ctypes.windll.user32
-_ENUMPROC = ctypes.WINFUNCTYPE(ctypes.c_bool, wt.HWND, wt.LPARAM)
-
-_GWL_EXSTYLE      = -20
-_GWLP_WNDPROC     = -4
->>>>>>> e0606f38c3d0c50b507c19ef778500e4bc8b82f3
 _WS_EX_TOOLWINDOW = 0x00000080
 _WS_EX_NOACTIVATE = 0x08000000
 _WS_EX_APPWINDOW  = 0x00040000
@@ -67,24 +58,17 @@ def _find_workerw() -> int:
         return True
 
     _u32.EnumWindows(_ENUMPROC(_cb), 0)
-<<<<<<< HEAD
     res = int(found) if found else 0
     if not res:
         res = int(_u32.FindWindowW("Progman", None))
     return res
-=======
-    return int(found) if found else 0
->>>>>>> e0606f38c3d0c50b507c19ef778500e4bc8b82f3
 
 
 def _install_drag_filter(hwnd: int, topbar_px: int = _drag_zone_px,
                           footer_px: int = _drag_zone_px):
     global _wndproc_orig, _wndproc_new
-<<<<<<< HEAD
     if _wndproc_orig is not None:
         return
-=======
->>>>>>> e0606f38c3d0c50b507c19ef778500e4bc8b82f3
 
     WNDPROCTYPE = ctypes.WINFUNCTYPE(
         ctypes.c_long, wt.HWND, wt.UINT, wt.WPARAM, wt.LPARAM
@@ -93,7 +77,6 @@ def _install_drag_filter(hwnd: int, topbar_px: int = _drag_zone_px,
     orig_proc = _u32.GetWindowLongPtrW(hwnd, _GWLP_WNDPROC)
 
     def _proc(h, msg, wp, lp):
-<<<<<<< HEAD
         global _pending_repin_hwnd
         if _pending_repin_hwnd == h:
             if (msg == 0x0006 and (wp & 0xFFFF) == 0) or msg == 0x0008 or (msg == 0x0086 and wp == 0):
@@ -128,25 +111,6 @@ def pin_window_to_desktop(hwnd: int) -> bool:
     x, y = rect.left, rect.top
     w, h = rect.right - rect.left, rect.bottom - rect.top
 
-=======
-        if msg == _WM_NCHITTEST:
-            cy = ctypes.c_short(lp >> 16).value
-            rect = wt.RECT()
-            _u32.GetWindowRect(h, ctypes.byref(rect))
-            rel_y = cy - rect.top
-            win_h = rect.bottom - rect.top
-            if rel_y <= topbar_px or rel_y >= win_h - footer_px:
-                return _HTCAPTION
-            return _HTCLIENT
-        return ctypes.windll.user32.CallWindowProcW(orig_proc, h, msg, wp, lp)
-
-    _wndproc_new  = WNDPROCTYPE(_proc)
-    _wndproc_orig = orig_proc
-    _u32.SetWindowLongPtrW(hwnd, _GWLP_WNDPROC, _wndproc_new)
-
-
-def pin_window_to_desktop(hwnd: int) -> bool:
->>>>>>> e0606f38c3d0c50b507c19ef778500e4bc8b82f3
     _spawn_workerw()
     time.sleep(0.18)
 
@@ -154,7 +118,6 @@ def pin_window_to_desktop(hwnd: int) -> bool:
     if not workerw:
         return False
 
-<<<<<<< HEAD
     pt = wt.POINT(x, y)
     _u32.ScreenToClient(workerw, ctypes.byref(pt))
 
@@ -162,15 +125,12 @@ def pin_window_to_desktop(hwnd: int) -> bool:
     style = (style | _WS_CHILD) & ~_WS_POPUP
     _u32.SetWindowLongPtrW(hwnd, _GWL_STYLE, style)
 
-=======
->>>>>>> e0606f38c3d0c50b507c19ef778500e4bc8b82f3
     _u32.SetParent(hwnd, workerw)
 
     ex = _u32.GetWindowLongPtrW(hwnd, _GWL_EXSTYLE)
     ex = (ex | _WS_EX_TOOLWINDOW | _WS_EX_NOACTIVATE) & ~_WS_EX_APPWINDOW
     _u32.SetWindowLongPtrW(hwnd, _GWL_EXSTYLE, ex)
 
-<<<<<<< HEAD
     SWP_FRAMECHANGED = 0x0020
     SWP_SHOWWINDOW   = 0x0040
     SWP_NOACTIVATE   = 0x0010
@@ -331,7 +291,3 @@ def peek_desktop_widget(hwnd: int) -> bool:
     except Exception as e:
         print(f"[window] Error peeking widget: {e}")
         return False
-=======
-    _install_drag_filter(hwnd)
-    return True
->>>>>>> e0606f38c3d0c50b507c19ef778500e4bc8b82f3

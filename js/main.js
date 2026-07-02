@@ -20,29 +20,18 @@ const LANGS = {
 
 const THEMES = {
   dusk:       { cm: "cs-dusk" },
-<<<<<<< HEAD
   quartz:     { cm: "cs-quartz" },
   monarch:    { cm: "cs-monarch" },
-=======
-  paper:      { cm: "cs-paper" },
->>>>>>> e0606f38c3d0c50b507c19ef778500e4bc8b82f3
   aurora:     { cm: "cs-aurora" },
   grove:      { cm: "cs-grove" },
   rose:       { cm: "cs-rose" },
   contrast:   { cm: "cs-contrast" },
   nord:       { cm: "cs-nord" },
-<<<<<<< HEAD
-=======
-  solarized:  { cm: "cs-solarized" },
->>>>>>> e0606f38c3d0c50b507c19ef778500e4bc8b82f3
   dracula:    { cm: "cs-dracula" },
 };
 
 document.documentElement.dataset.theme = "dusk";
-<<<<<<< HEAD
 let isPinned = false;
-=======
->>>>>>> e0606f38c3d0c50b507c19ef778500e4bc8b82f3
 
 const VOID_TAGS = new Set([
   "area","base","br","col","embed","hr","img","input",
@@ -74,30 +63,18 @@ const CSS_VALUES = {
 };
 
 const CSS_SNIPPETS = {
-<<<<<<< HEAD
-=======
-  // Box Model
->>>>>>> e0606f38c3d0c50b507c19ef778500e4bc8b82f3
   m: "margin: ;", mt: "margin-top: ;", mr: "margin-right: ;", mb: "margin-bottom: ;", ml: "margin-left: ;",
   p: "padding: ;", pt: "padding-top: ;", pr: "padding-right: ;", pb: "padding-bottom: ;", pl: "padding-left: ;",
   w: "width: ;", miw: "min-width: ;", maw: "max-width: ;",
   h: "height: ;", mih: "min-height: ;", mah: "max-height: ;",
   bxz: "box-sizing: ;", "bxz:cb": "box-sizing: content-box;", "bxz:bb": "box-sizing: border-box;",
   
-<<<<<<< HEAD
-=======
-  // Display & Positioning
->>>>>>> e0606f38c3d0c50b507c19ef778500e4bc8b82f3
   d: "display: ;", dn: "display: none;", db: "display: block;", di: "display: inline;", dib: "display: inline-block;",
   df: "display: flex;", dif: "display: inline-flex;", dg: "display: grid;", dig: "display: inline-grid;", dt: "display: table;",
   pos: "position: ;", psr: "position: relative;", psa: "position: absolute;", psf: "position: fixed;", pss: "position: sticky;",
   t: "top: ;", r: "right: ;", b: "bottom: ;", l: "left: ;", z: "z-index: ;",
   fl: "float: ;", flr: "float: right;", fll: "float: left;", cl: "clear: ;", clb: "clear: both;",
   
-<<<<<<< HEAD
-=======
-  // Flexbox
->>>>>>> e0606f38c3d0c50b507c19ef778500e4bc8b82f3
   fx: "flex: ;", "fx:1": "flex: 1;", fxd: "flex-direction: ;", "fxd:r": "flex-direction: row;", "fxd:c": "flex-direction: column;",
   fxw: "flex-wrap: ;", "fxw:n": "flex-wrap: nowrap;", "fxw:w": "flex-wrap: wrap;",
   jc: "justify-content: ;", "jc:fs": "justify-content: flex-start;", "jc:fe": "justify-content: flex-end;", "jc:c": "justify-content: center;", "jc:sb": "justify-content: space-between;", "jc:sa": "justify-content: space-around;",
@@ -105,18 +82,10 @@ const CSS_SNIPPETS = {
   ac: "align-content: ;", "ac:fs": "align-content: flex-start;", "ac:fe": "align-content: flex-end;", "ac:c": "align-content: center;", "ac:sb": "align-content: space-between;", "ac:sa": "align-content: space-around;", "ac:s": "align-content: stretch;",
   as: "align-self: ;", "as:fs": "align-self: flex-start;", "as:fe": "align-self: flex-end;", "as:c": "align-self: center;", "as:b": "align-self: baseline;", "as:s": "align-self: stretch;",
   
-<<<<<<< HEAD
-=======
-  // Grid
->>>>>>> e0606f38c3d0c50b507c19ef778500e4bc8b82f3
   gtc: "grid-template-columns: ;", gtr: "grid-template-rows: ;", gta: "grid-template-areas: ;",
   gc: "grid-column: ;", gr: "grid-row: ;", ga: "grid-area: ;",
   gap: "gap: ;", rg: "row-gap: ;", cg: "column-gap: ;",
   
-<<<<<<< HEAD
-=======
-  // Typography
->>>>>>> e0606f38c3d0c50b507c19ef778500e4bc8b82f3
   c: "color: ;", "c:t": "color: transparent;",
   fz: "font-size: ;", fw: "font-weight: ;", "fw:n": "font-weight: normal;", "fw:b": "font-weight: bold;",
   ff: "font-family: ;", lh: "line-height: ;", ls: "letter-spacing: ;",
@@ -127,36 +96,20 @@ const CSS_SNIPPETS = {
   ww: "word-wrap: ;", "ww:bw": "word-wrap: break-word;",
   va: "vertical-align: ;", "va:t": "vertical-align: top;", "va:m": "vertical-align: middle;", "va:b": "vertical-align: bottom;", "va:bl": "vertical-align: baseline;",
   
-<<<<<<< HEAD
-=======
-  // Background
->>>>>>> e0606f38c3d0c50b507c19ef778500e4bc8b82f3
   bg: "background: ;", "bg+": "background: #fff url() 0 0 no-repeat;", bgc: "background-color: ;", "bgc:t": "background-color: transparent;",
   bgi: "background-image: url();", "bgi:n": "background-image: none;",
   bgr: "background-repeat: ;", "bgr:n": "background-repeat: no-repeat;", "bgr:x": "background-repeat: repeat-x;", "bgr:y": "background-repeat: repeat-y;",
   bgp: "background-position: 0 0;", bgs: "background-size: ;", "bgs:cv": "background-size: cover;", "bgs:ct": "background-size: contain;",
   bga: "background-attachment: ;", "bga:f": "background-attachment: fixed;", "bga:s": "background-attachment: scroll;",
   
-<<<<<<< HEAD
-=======
-  // Borders
->>>>>>> e0606f38c3d0c50b507c19ef778500e4bc8b82f3
   bd: "border: ;", "bd+": "border: 1px solid #000;", bdt: "border-top: ;", bdr: "border-right: ;", bdb: "border-bottom: ;", bdl: "border-left: ;",
   bdc: "border-color: ;", "bdc:t": "border-color: transparent;", bdw: "border-width: ;", bds: "border-style: ;",
   "bds:n": "border-style: none;", "bds:s": "border-style: solid;", "bds:d": "border-style: dashed;", "bds:do": "border-style: dotted;",
   bdrs: "border-radius: ;",
   
-<<<<<<< HEAD
   lis: "list-style: ;", "lis:n": "list-style: none;", lisi: "list-style-image: url();", "lisi:n": "list-style-image: none;",
   list: "list-style-type: ;", "list:n": "list-style-type: none;", "list:c": "list-style-type: circle;", "list:d": "list-style-type: disc;", "list:s": "list-style-type: square;",
   
-=======
-  // Lists
-  lis: "list-style: ;", "lis:n": "list-style: none;", lisi: "list-style-image: url();", "lisi:n": "list-style-image: none;",
-  list: "list-style-type: ;", "list:n": "list-style-type: none;", "list:c": "list-style-type: circle;", "list:d": "list-style-type: disc;", "list:s": "list-style-type: square;",
-  
-  // UI & Effects
->>>>>>> e0606f38c3d0c50b507c19ef778500e4bc8b82f3
   op: "opacity: ;", bxsh: "box-shadow: ;", "bxsh:n": "box-shadow: none;", tsh: "text-shadow: ;", "tsh:n": "text-shadow: none;",
   ov: "overflow: ;", "ov:h": "overflow: hidden;", "ov:s": "overflow: scroll;", "ov:a": "overflow: auto;", ovx: "overflow-x: ;", ovy: "overflow-y: ;",
   cur: "cursor: ;", "cur:p": "cursor: pointer;", "cur:d": "cursor: default;", "cur:n": "cursor: none;",
@@ -624,7 +577,6 @@ const editor = CodeMirror.fromTextArea(document.getElementById("editor"), {
       cm.setCursor({ line: cur.line + 1, ch: cur.ch });
     },
 
-<<<<<<< HEAD
     "Ctrl-S": () => saveFile(),
     "Cmd-S": () => saveFile(),
     "Ctrl-O": () => openFile(),
@@ -637,10 +589,6 @@ const editor = CodeMirror.fromTextArea(document.getElementById("editor"), {
     "Cmd-+": () => zoomEditor(1),
     "Cmd--": () => zoomEditor(-1),
     "Cmd-0": () => resetZoom(),
-=======
-    "Ctrl-O": () => openFile(),
-    "Ctrl-N": () => newFile(),
->>>>>>> e0606f38c3d0c50b507c19ef778500e4bc8b82f3
   },
 });
 
@@ -663,10 +611,6 @@ function abbreviationHint(cm) {
   let list = [];
 
   if (lang === "css") {
-<<<<<<< HEAD
-=======
-    // Context-aware value completion (e.g. after 'cursor: ')
->>>>>>> e0606f38c3d0c50b507c19ef778500e4bc8b82f3
     const valMatch = before.match(/(?:^|[;{}])\s*([\w-]+)\s*:\s*([\w-]*)$/);
     if (valMatch) {
       const prop = valMatch[1];
@@ -693,10 +637,6 @@ function abbreviationHint(cm) {
       }
     }
 
-<<<<<<< HEAD
-=======
-    // Property snippet completion
->>>>>>> e0606f38c3d0c50b507c19ef778500e4bc8b82f3
     const wm = before.match(/([\w-]+)$/);
     if (!wm) return null;
     const word = wm[1];
@@ -894,7 +834,6 @@ editor.on("cursorActivity", () => {
   document.getElementById("col").textContent = c.ch + 1;
 });
 
-<<<<<<< HEAD
 let tabs = [];
 let activeTabId = null;
 let tabIdCounter = 1;
@@ -993,14 +932,6 @@ window.addEventListener("wheel", (e) => {
   }
 }, { capture: true, passive: false });
 
-=======
-let _saveTimer = null;
-editor.on("change", () => {
-  clearTimeout(_saveTimer);
-  _saveTimer = setTimeout(_persistState, 1400);
-});
-
->>>>>>> e0606f38c3d0c50b507c19ef778500e4bc8b82f3
 function _protectFromWindowDrag(selector) {
   document.querySelectorAll(selector).forEach(el => {
     ["mousedown", "pointerdown", "touchstart"].forEach(type => {
@@ -1011,7 +942,6 @@ function _protectFromWindowDrag(selector) {
 
 _protectFromWindowDrag("#editor-wrap, input, select, button");
 
-<<<<<<< HEAD
 function renderTabs() {
   const bar = document.getElementById("tabbar");
   if (!bar) return;
@@ -1141,15 +1071,12 @@ function confirmCloseTab() {
   }
 }
 
-=======
->>>>>>> e0606f38c3d0c50b507c19ef778500e4bc8b82f3
 function onLangChange(key, shouldPersist = true) {
   const def = LANGS[key];
   if (!def) return;
   editor.setOption("mode", def.mode);
   document.getElementById("ext-badge").textContent    = def.ext;
   document.getElementById("filename-ext").textContent = def.ext;
-<<<<<<< HEAD
   if (!isSwitchingTab) {
     const currentTab = tabs.find(t => t.id === activeTabId);
     if (currentTab) {
@@ -1157,8 +1084,6 @@ function onLangChange(key, shouldPersist = true) {
       renderTabs();
     }
   }
-=======
->>>>>>> e0606f38c3d0c50b507c19ef778500e4bc8b82f3
   if (shouldPersist) _persistState();
 }
 
@@ -1175,7 +1100,6 @@ function onThemeChange(key) {
   _setTheme(key, true);
 }
 
-<<<<<<< HEAD
 function togglePin() {
   isPinned = !isPinned;
   const btn = document.getElementById('btn-pin');
@@ -1250,18 +1174,6 @@ setInterval(updateGitBranch, 30000);
 
 function newFile() {
   createTab("snippet", "javascript", "");
-=======
-function newFile() {
-  editor.setValue("");
-  editor.clearHistory();
-  editor.setCursor({ line: 0, ch: 0 });
-  document.getElementById("filename-input").value = "";
-  document.getElementById("lang-select").value    = "javascript";
-  onLangChange("javascript", false);
-  _persistState();
-  toast("New file", "inf");
-  editor.focus();
->>>>>>> e0606f38c3d0c50b507c19ef778500e4bc8b82f3
 }
 
 function openFile() {
@@ -1271,29 +1183,11 @@ function openFile() {
       if (result.error) toast(result.error, "err");
       return;
     }
-<<<<<<< HEAD
     const filename = result.filename || "snippet";
     const lang = LANGS[result.language] ? result.language : "javascript";
     const dir = result.path.replace(/[\\/][^\\/]+$/, "");
     createTab(filename, lang, result.code, dir || "");
     toast("Opened " + filename, "ok");
-=======
-    const sel = document.getElementById("lang-select");
-    if (LANGS[result.language]) {
-      sel.value = result.language;
-      onLangChange(result.language, false);
-    }
-    editor.setValue(result.code);
-    editor.clearHistory();
-    editor.setCursor({ line: 0, ch: 0 });
-    if (result.filename) {
-      document.getElementById("filename-input").value = result.filename;
-    }
-    const dir = result.path.replace(/[\\/][^\\/]+$/, "");
-    if (dir) document.getElementById("export-dir").value = dir;
-    _persistState();
-    toast(result.path.split(/[\\/]/).pop(), "inf");
->>>>>>> e0606f38c3d0c50b507c19ef778500e4bc8b82f3
   });
 }
 
@@ -1302,14 +1196,10 @@ function pickFolder() {
   window.pywebview.api.pick_folder().then(result => {
     if (result.ok) {
       document.getElementById("export-dir").value = result.path;
-<<<<<<< HEAD
       const currentTab = tabs.find(t => t.id === activeTabId);
       if (currentTab) currentTab.path = result.path;
       _persistState();
       updateGitBranch();
-=======
-      _persistState();
->>>>>>> e0606f38c3d0c50b507c19ef778500e4bc8b82f3
     } else if (result.error) {
       toast(result.error, "err");
     }
@@ -1330,7 +1220,6 @@ function saveFile() {
     : Promise.resolve({ ok: false, error: "Not running in desktop app" });
 
   call.then(r => {
-<<<<<<< HEAD
     if (r.ok) {
       toast("saved  " + r.path.split(/[\\/]/).pop(), "ok");
       isDirty = false;
@@ -1346,11 +1235,6 @@ function saveFile() {
     } else {
       toast(r.error || "Save failed", "err");
     }
-=======
-    if (r.ok) toast("saved  " + r.path.split(/[\\/]/).pop(), "ok");
-    else      toast(r.error || "Save failed", "err");
-    if (r.ok) _persistState();
->>>>>>> e0606f38c3d0c50b507c19ef778500e4bc8b82f3
   });
 }
 
@@ -1358,7 +1242,6 @@ function clearAll() {
   if (!editor.getValue().trim()) return;
   editor.setValue("");
   editor.clearHistory();
-<<<<<<< HEAD
   isDirty = false;
   const currentTab = tabs.find(t => t.id === activeTabId);
   if (currentTab) {
@@ -1429,11 +1312,6 @@ window.addEventListener("click", (e) => {
   }
 });
 
-=======
-  toast("Cleared", "inf");
-}
-
->>>>>>> e0606f38c3d0c50b507c19ef778500e4bc8b82f3
 function copyAll() {
   const code = editor.getValue();
   if (!code.trim()) { toast("Nothing to copy", "err"); return; }
@@ -1450,7 +1328,6 @@ function copyAll() {
 }
 
 function _persistState() {
-<<<<<<< HEAD
   const currentTab = tabs.find(t => t.id === activeTabId);
   if (currentTab) {
     currentTab.code = editor.getValue();
@@ -1459,22 +1336,17 @@ function _persistState() {
     currentTab.isDirty = isDirty;
     currentTab.path = document.getElementById("export-dir").value.trim();
   }
-=======
->>>>>>> e0606f38c3d0c50b507c19ef778500e4bc8b82f3
   const payload = {
     language:   document.getElementById("lang-select").value,
     theme:      document.getElementById("theme-select").value,
     code:       editor.getValue(),
     export_dir: document.getElementById("export-dir").value.trim(),
     filename:   document.getElementById("filename-input").value.trim(),
-<<<<<<< HEAD
     fontSize:   currentFontSize,
     tabs:       tabs,
     activeTabId: activeTabId,
     tabIdCounter: tabIdCounter,
     pinned: isPinned
-=======
->>>>>>> e0606f38c3d0c50b507c19ef778500e4bc8b82f3
   };
   if (window.pywebview) window.pywebview.api.save_note(payload);
   else try { localStorage.setItem("cs_state", JSON.stringify(payload)); } catch (_) {}
@@ -1482,7 +1354,6 @@ function _persistState() {
 
 function _applyState(data) {
   if (!data) return;
-<<<<<<< HEAD
   let themeKey = data.theme;
   if (themeKey === "paper") themeKey = "quartz";
   if (themeKey && THEMES[themeKey]) {
@@ -1564,29 +1435,6 @@ function _loadState() {
     } catch (_) {}
     checkEmpty();
   }
-=======
-  if (data.language && LANGS[data.language]) {
-    document.getElementById("lang-select").value = data.language;
-    onLangChange(data.language, false);
-  }
-  if (data.theme && THEMES[data.theme]) {
-    _setTheme(data.theme, false);
-  }
-  if (data.code !== undefined) {
-    editor.setValue(data.code);
-    editor.clearHistory();
-  }
-  if (data.export_dir) document.getElementById("export-dir").value    = data.export_dir;
-  if (data.filename)   document.getElementById("filename-input").value = data.filename;
-}
-
-function _loadState() {
-  if (window.pywebview) window.pywebview.api.load_note().then(_applyState);
-  else try {
-    const raw = localStorage.getItem("cs_state");
-    if (raw) _applyState(JSON.parse(raw));
-  } catch (_) {}
->>>>>>> e0606f38c3d0c50b507c19ef778500e4bc8b82f3
 }
 
 function toast(msg, type) {
@@ -1597,7 +1445,6 @@ function toast(msg, type) {
   el._t = setTimeout(() => { el.className = ""; }, 2100);
 }
 
-<<<<<<< HEAD
 window.addEventListener("keydown", (e) => {
   if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "s") {
     e.preventDefault();
@@ -1660,8 +1507,6 @@ function _setupWindowDragging() {
 }
 _setupWindowDragging();
 
-=======
->>>>>>> e0606f38c3d0c50b507c19ef778500e4bc8b82f3
 onLangChange("javascript", false);
 window.addEventListener("pywebviewready", _loadState);
 if (!window.pywebview) setTimeout(_loadState, 60);

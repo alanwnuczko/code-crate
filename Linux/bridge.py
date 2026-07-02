@@ -28,10 +28,7 @@ DEFAULT_STATE = {
     "code":       "",
     "export_dir": "",
     "filename":   "",
-<<<<<<< HEAD
     "fontSize":   13,
-=======
->>>>>>> e0606f38c3d0c50b507c19ef778500e4bc8b82f3
 }
 
 _EXT_TO_LANG = {v: k for k, v in EXTENSIONS.items()}
@@ -54,21 +51,11 @@ _EXT_TO_LANG.update({
 class Bridge:
     def __init__(self, state_path: str):
         self._state_path = state_path
-<<<<<<< HEAD
         self._drag_origin = None
-=======
-        self._window     = None
-        self._drag_origin = None          # set by start_drag()
->>>>>>> e0606f38c3d0c50b507c19ef778500e4bc8b82f3
 
     def set_window(self, window):
         self._window = window
 
-<<<<<<< HEAD
-=======
-    # ── Window drag (called from injected JS) ──────────────────────────
-
->>>>>>> e0606f38c3d0c50b507c19ef778500e4bc8b82f3
     def start_drag(self, screen_x, screen_y) -> None:
         """Mousedown on a drag region — snapshot the starting positions."""
         if not self._window:
@@ -92,14 +79,8 @@ class Bridge:
         try:
             self._window.move(new_x, new_y)
         except Exception:
-<<<<<<< HEAD
             try:
                 from gi.repository import GLib
-=======
-            # Fallback: try GTK-level move
-            try:
-                from gi.repository import GLib  # type: ignore[attr-defined]
->>>>>>> e0606f38c3d0c50b507c19ef778500e4bc8b82f3
                 from webview.platforms.gtk import BrowserView
                 for inst in BrowserView.instances.values():
                     GLib.idle_add(inst.window.move, new_x, new_y)

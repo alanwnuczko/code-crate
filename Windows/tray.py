@@ -15,14 +15,10 @@ def _bundle_path(*parts) -> str:
         base = sys._MEIPASS
     else:
         base = os.path.dirname(os.path.abspath(__file__))
-<<<<<<< HEAD
     target = os.path.join(base, *parts)
     if os.path.exists(target):
         return target
     return os.path.join(os.path.dirname(base), *parts)
-=======
-    return os.path.join(base, *parts)
->>>>>>> e0606f38c3d0c50b507c19ef778500e4bc8b82f3
 
 
 def _get_tray_position() -> tuple:
@@ -32,7 +28,6 @@ def _get_tray_position() -> tuple:
 
 
 def _get_window_hwnd(window) -> int:
-<<<<<<< HEAD
     cached = getattr(window, '_cached_hwnd', None)
     if cached:
         return int(cached)
@@ -59,18 +54,12 @@ def _get_window_hwnd(window) -> int:
         hwnd = window.get_current_window()
         if hwnd:
             setattr(window, '_cached_hwnd', int(hwnd))
-=======
-    try:
-        hwnd = window.get_current_window()
-        if hwnd:
->>>>>>> e0606f38c3d0c50b507c19ef778500e4bc8b82f3
             return int(hwnd)
     except Exception:
         pass
 
     import os as _os
     pid = _os.getpid()
-<<<<<<< HEAD
     found = 0
     _EPROC = ctypes.WINFUNCTYPE(ctypes.c_bool, wt.HWND, wt.LPARAM)
 
@@ -80,22 +69,10 @@ def _get_window_hwnd(window) -> int:
         _u32.GetWindowThreadProcessId(h, ctypes.byref(lp_pid))
         if lp_pid.value == pid:
             found = int(h)
-=======
-    found = ctypes.c_void_p(0)
-    _EPROC = ctypes.WINFUNCTYPE(ctypes.c_bool, wt.HWND, wt.LPARAM)
-
-    def _cb(hwnd, _):
-        nonlocal found
-        lp_pid = wt.DWORD()
-        _u32.GetWindowThreadProcessId(hwnd, ctypes.byref(lp_pid))
-        if lp_pid.value == pid:
-            found = hwnd
->>>>>>> e0606f38c3d0c50b507c19ef778500e4bc8b82f3
             return False
         return True
 
     _u32.EnumWindows(_EPROC(_cb), 0)
-<<<<<<< HEAD
     if not found:
         def _child_cb(h, _):
             nonlocal found
@@ -118,52 +95,6 @@ def _animate_collapse(window, hwnd: int, start_pos: tuple, end_pos: tuple, durat
 
 def _animate_expand(window, hwnd: int, start_pos: tuple, end_pos: tuple, end_size: tuple, duration: float = 0.3):
     pass
-=======
-    return int(found) if found else 0
-
-
-def _animate_collapse(window, hwnd: int, start_pos: tuple, end_pos: tuple, duration: float = 0.3):
-    start_time = time.time()
-    rect = wt.RECT()
-
-    while True:
-        elapsed = time.time() - start_time
-        progress = min(elapsed / duration, 1.0)
-
-        _u32.GetWindowRect(hwnd, ctypes.byref(rect))
-        current_w = rect.right - rect.left
-        current_h = rect.bottom - rect.top
-
-        new_x = int(start_pos[0] + (end_pos[0] - start_pos[0]) * progress)
-        new_y = int(start_pos[1] + (end_pos[1] - start_pos[1]) * progress)
-        new_w = max(int(current_w * (1 - progress)), 1)
-        new_h = max(int(current_h * (1 - progress)), 1)
-
-        _u32.SetWindowPos(hwnd, 0, new_x, new_y, new_w, new_h, 0)
-
-        if progress >= 1.0:
-            break
-        time.sleep(0.01)
-
-
-def _animate_expand(window, hwnd: int, start_pos: tuple, end_pos: tuple, end_size: tuple, duration: float = 0.3):
-    start_time = time.time()
-
-    while True:
-        elapsed = time.time() - start_time
-        progress = min(elapsed / duration, 1.0)
-
-        new_x = int(start_pos[0] + (end_pos[0] - start_pos[0]) * progress)
-        new_y = int(start_pos[1] + (end_pos[1] - start_pos[1]) * progress)
-        new_w = int(1 + (end_size[0] - 1) * progress)
-        new_h = int(1 + (end_size[1] - 1) * progress)
-
-        _u32.SetWindowPos(hwnd, 0, new_x, new_y, new_w, new_h, 0)
-
-        if progress >= 1.0:
-            break
-        time.sleep(0.01)
->>>>>>> e0606f38c3d0c50b507c19ef778500e4bc8b82f3
 
 
 def start(window, on_quit: Callable):
@@ -174,10 +105,7 @@ def start(window, on_quit: Callable):
     default_size = [None]
     icon_ref = [None]
     is_animating = [False]
-<<<<<<< HEAD
     is_pinned = [False]
-=======
->>>>>>> e0606f38c3d0c50b507c19ef778500e4bc8b82f3
 
     def _collapse_to_tray():
         try:
@@ -202,12 +130,6 @@ def start(window, on_quit: Callable):
             if 100 < size[0] < 10000 and 100 < size[1] < 10000:
                 saved_size[0] = size
 
-<<<<<<< HEAD
-=======
-            tray_pos = _get_tray_position()
-            _animate_collapse(window, hwnd, pos, tray_pos, duration=0.25)
-
->>>>>>> e0606f38c3d0c50b507c19ef778500e4bc8b82f3
             window.hide()
             visible[0] = False
             is_animating[0] = False
@@ -223,7 +145,6 @@ def start(window, on_quit: Callable):
                 return
             is_animating[0] = True
 
-<<<<<<< HEAD
             window.show()
             time.sleep(0.05)
 
@@ -236,36 +157,6 @@ def start(window, on_quit: Callable):
                 else:
                     from win32_desktop import peek_desktop_widget
                     peek_desktop_widget(hwnd)
-=======
-            hwnd = _get_window_hwnd(window)
-            if not hwnd:
-                window.show()
-                visible[0] = True
-                is_animating[0] = False
-                return
-
-            restore_pos  = saved_pos[0]  or default_pos[0]
-            restore_size = saved_size[0] or default_size[0]
-
-            if not restore_pos or not restore_size:
-                window.show()
-                visible[0] = True
-                is_animating[0] = False
-                return
-
-            window.show()
-            time.sleep(0.05)
-
-            _u32.SetForegroundWindow(hwnd)
-            _u32.ShowWindow(hwnd, 5)
-            time.sleep(0.05)
-
-            tray_pos = _get_tray_position()
-            _animate_expand(window, hwnd, tray_pos, restore_pos, restore_size, duration=0.25)
-            _u32.SetWindowPos(hwnd, None, restore_pos[0], restore_pos[1],
-                              restore_size[0], restore_size[1], 0)
-            time.sleep(0.05)
->>>>>>> e0606f38c3d0c50b507c19ef778500e4bc8b82f3
 
             visible[0] = True
             is_animating[0] = False
@@ -287,7 +178,6 @@ def start(window, on_quit: Callable):
             except Exception:
                 pass
 
-<<<<<<< HEAD
     def set_pin_state(pinned):
         """Toggle always-on-top. Called from the bridge when the user clicks Pin."""
         from win32_desktop import unpin_from_desktop, repin_to_desktop
@@ -326,11 +216,6 @@ def start(window, on_quit: Callable):
             except Exception:
                 pass
 
-=======
-    def _label(item):
-        return "Collapse" if visible[0] else "Expand"
-
->>>>>>> e0606f38c3d0c50b507c19ef778500e4bc8b82f3
     def _run():
         try:
             import pystray
@@ -352,10 +237,7 @@ def start(window, on_quit: Callable):
                 "CodeCrate",
                 menu=pystray.Menu(
                     pystray.MenuItem(_label, _toggle, default=True),
-<<<<<<< HEAD
                     pystray.MenuItem(_pin_label, _toggle_pin),
-=======
->>>>>>> e0606f38c3d0c50b507c19ef778500e4bc8b82f3
                     pystray.Menu.SEPARATOR,
                     pystray.MenuItem("Quit", lambda icon, item: on_quit(icon)),
                 ),
@@ -368,8 +250,5 @@ def start(window, on_quit: Callable):
             print(f"[tray] {exc}")
 
     threading.Thread(target=_run, daemon=True).start()
-<<<<<<< HEAD
 
     return set_pin_state
-=======
->>>>>>> e0606f38c3d0c50b507c19ef778500e4bc8b82f3
