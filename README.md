@@ -48,8 +48,8 @@ Expand abbreviations into complete code structures as you type.
 
 | Platform | Version | Download |
 |----------|----------|----------|
-| Windows 11 | v2.1 | [CodeCrate.zip](https://github.com/alanwnuczko/code-crate/releases/tag/v2.1) |
-| Linux | v2.1 | [CodeCrate.tar.xz](https://github.com/alanwnuczko/code-crate/releases/tag/v2.1) |
+| Windows 11 | v2.1 | [CodeCrateWindows.zip](https://github.com/alanwnuczko/code-crate/releases/tag/v2.1) |
+| Linux | v2.1 | [CodeCrateLinux.tar.xz](https://github.com/alanwnuczko/code-crate/releases/tag/v2.1) |
 
 ---
 
