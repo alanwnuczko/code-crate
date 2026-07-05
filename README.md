@@ -1,15 +1,5 @@
 # CodeCrate
 
-## System requirements
-### Windows
-- **OS**: Windows 10/11
-- **Architecture**: x64
-- **Python**: 3.10+
-
-### Linux
-- **OS**: Ubuntu 22.04+ / Debian 12+ (or any Debian-based distro)
-- **Python**: 3.10+
-- **Desktop**: GNOME, KDE, XFCE, or any DE with AppIndicator support
 <p align="center">
   <img src="assets/readme/2.png">
 </p>
@@ -44,6 +34,17 @@ Expand abbreviations into complete code structures as you type.
   <img src="assets/readme/9.png" width="47.5%" />
 </p>
 
+## System requirements
+### Windows
+- **OS**: Windows 10/11
+- **Architecture**: x64
+- **Python**: 3.10+
+
+### Linux
+- **OS**: Ubuntu 22.04+ / Debian 12+ (or any Debian-based distro)
+- **Python**: 3.10+
+- **Desktop**: GNOME, KDE, XFCE, or any DE with AppIndicator support
+
 ## Download
 
 | Platform | Version | Download |
@@ -54,25 +55,16 @@ Expand abbreviations into complete code structures as you type.
 ---
 
 ## Build Guide
-#### Windows Dependencies
+
+### Building on Windows
+
+##### Python Dependencies
 ```bash
 pip install pyinstaller pywebview pystray pillow pywin32
 ```
 
-#### Linux Dependencies
-```bash
-# Ubuntu/Debian system dependencies
-sudo apt update
-sudo apt install -y python3-gi python3-gi-cairo gir1.2-gtk-3.0 gir1.2-webkit2-4.1 libgirepository1.0-dev gcc libcairo2-dev pkg-config python3-dev
-
-# Python dependencies
-pip install pyinstaller pywebview pystray pillow pygobject
-```
-
-### Building on Windows
-
-#### Run PyInstaller
-Execute the following command from the project root (`code-crate`):
+##### Run PyInstaller
+Execute the following command from the project root:
 
 ```powershell
 pyinstaller --noconfirm --onedir --windowed `
@@ -87,8 +79,18 @@ pyinstaller --noconfirm --onedir --windowed `
 
 ### Building on Linux
 
-#### Run PyInstaller
-Execute the following command from the project root (`code-crate`):
+##### Linux Dependencies
+```bash
+# Ubuntu/Debian system dependencies
+sudo apt update
+sudo apt install -y python3-gi python3-gi-cairo gir1.2-gtk-3.0 gir1.2-webkit2-4.1 libgirepository1.0-dev gcc libcairo2-dev pkg-config python3-dev
+
+# Python dependencies
+pip install pyinstaller pywebview pystray pillow pygobject
+```
+
+##### Run PyInstaller
+Execute the following command from the project root:
 
 ```bash
 pyinstaller --noconfirm --onedir --windowed \
