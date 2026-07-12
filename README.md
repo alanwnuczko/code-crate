@@ -1,4 +1,10 @@
-# CodeCrate
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="assets/readme/text_dark_mode.svg">
+    <source media="(prefers-color-scheme: light)" srcset="assets/readme/text_light_mode.svg">
+    <img alt="CodeCrate" src="assets/readme/text_light_mode.svg" width="700">
+  </picture>
+</p>
 
 <p align="center">
   <img src="assets/readme/2.png">
