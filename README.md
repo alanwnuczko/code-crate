@@ -2,7 +2,7 @@
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="assets/readme/text_dark_mode.svg">
     <source media="(prefers-color-scheme: light)" srcset="assets/readme/text_light_mode.svg">
-    <img alt="CodeCrate" src="assets/readme/text_light_mode.svg" width="700">
+    <img alt="CodeCrate" src="assets/readme/text_light_mode.svg" width="350">
   </picture>
 </p>
 
