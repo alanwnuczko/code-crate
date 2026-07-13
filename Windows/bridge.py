@@ -148,6 +148,36 @@ class Bridge:
         except Exception as exc:
             return {"ok": False, "error": str(exc)}
 
+    def open_file_by_path(self, path: str) -> dict:
+        try:
+            if not path or not os.path.isfile(path):
+                return {"ok": False, "error": "File not found"}
+            ext  = os.path.splitext(path)[1].lower()
+            lang = _EXT_TO_LANG.get(ext, "text")
+            with open(path, "r", encoding="utf-8", errors="replace") as f:
+                content = f.read()
+            return {
+                "ok":       True,
+                "path":     path,
+                "filename": os.path.splitext(os.path.basename(path))[0],
+                "language": lang,
+                "code":     content,
+            }
+        except Exception as exc:
+            return {"ok": False, "error": str(exc)}
+
+    def get_dropped_file_path(self, filename: str) -> str:
+        try:
+            import urllib.parse, webview.dom
+            paths = webview.dom._dnd_state.get('paths', [])
+            for item in list(paths):
+                if item[0] == filename or urllib.parse.unquote(item[0]) == filename:
+                    paths.remove(item)
+                    return item[1]
+        except Exception as e:
+            print(f"[bridge] get_dropped_file_path error: {e}")
+        return ""
+
     def load_note(self) -> dict:
         if not os.path.exists(self._state_path) or os.path.getsize(self._state_path) == 0:
             return DEFAULT_STATE.copy()
@@ -177,7 +207,7 @@ class Bridge:
             return {"ok": False, "error": f"Folder not found: {directory}"}
 
         ext  = EXTENSIONS.get(language, ".txt")
-        name = (filename.strip() or "snippet")
+        name = (filename.strip() or "untitled")
         if not name.endswith(ext):
             name += ext
 
