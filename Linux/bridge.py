@@ -164,7 +164,7 @@ class Bridge:
             return {"ok": False, "error": f"Folder not found: {directory}"}
 
         ext  = EXTENSIONS.get(language, ".txt")
-        name = (filename.strip() or "snippet")
+        name = (filename.strip() or "untitled")
         if not name.endswith(ext):
             name += ext
 

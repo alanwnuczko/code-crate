@@ -1,6 +1,7 @@
 const LANGS = {
   javascript: { mode: "javascript",                          ext: ".js"    },
   typescript: { mode: { name: "javascript", typescript: true }, ext: ".ts" },
+  json:       { mode: { name: "javascript", json: true },       ext: ".json"  },
   python:     { mode: "python",                              ext: ".py"    },
   c_cpp:      { mode: "text/x-c++src",                       ext: ".cpp"   },
   java:       { mode: "text/x-java",                         ext: ".java"  },
@@ -589,6 +590,9 @@ const editor = CodeMirror.fromTextArea(document.getElementById("editor"), {
     "Cmd-+": () => zoomEditor(1),
     "Cmd--": () => zoomEditor(-1),
     "Cmd-0": () => resetZoom(),
+    "Ctrl-Shift-P": () => openCommandPalette(),
+    "Cmd-Shift-P": () => openCommandPalette(),
+    "F1": () => openCommandPalette(),
   },
 });
 
@@ -864,7 +868,7 @@ setTimeout(() => {
       if (isSwitchingTab) return;
       const currentTab = tabs.find(t => t.id === activeTabId);
       if (currentTab) {
-        currentTab.filename = fi.value.trim() || "snippet";
+        currentTab.filename = fi.value.trim() || "untitled";
         renderTabs();
         _scheduleSave();
       }
@@ -957,7 +961,7 @@ function renderTabs() {
     const ext = def ? def.ext : ".js";
     const titleSpan = document.createElement("span");
     titleSpan.className = "doc-tab-title";
-    titleSpan.textContent = (tab.filename || "snippet") + ext + (tab.isDirty ? " •" : "");
+    titleSpan.textContent = (tab.filename || "untitled") + ext + (tab.isDirty ? " •" : "");
     el.appendChild(titleSpan);
 
     const closeBtn = document.createElement("span");
@@ -985,7 +989,7 @@ function switchTab(id) {
   const currentTab = tabs.find(t => t.id === activeTabId);
   if (currentTab && !isSwitchingTab) {
     currentTab.code = editor.getValue();
-    currentTab.filename = document.getElementById("filename-input").value.trim() || "snippet";
+    currentTab.filename = document.getElementById("filename-input").value.trim() || "untitled";
     currentTab.language = document.getElementById("lang-select").value;
     currentTab.isDirty = isDirty;
     currentTab.path = document.getElementById("export-dir").value.trim();
@@ -994,7 +998,7 @@ function switchTab(id) {
   activeTabId = id;
   const nextTab = tabs.find(t => t.id === id);
   if (nextTab) {
-    document.getElementById("filename-input").value = (nextTab.filename && nextTab.filename !== "snippet") ? nextTab.filename : "";
+    document.getElementById("filename-input").value = (nextTab.filename && nextTab.filename !== "untitled" && nextTab.filename !== "snippet") ? nextTab.filename : "";
     document.getElementById("lang-select").value = nextTab.language || "javascript";
     const def = LANGS[nextTab.language] || LANGS.javascript;
     editor.setOption("mode", def.mode);
@@ -1012,11 +1016,11 @@ function switchTab(id) {
   _persistState();
 }
 
-function createTab(filename = "snippet", lang = "javascript", code = "", path = null) {
+function createTab(filename = "untitled", lang = "javascript", code = "", path = null) {
   const currentTab = tabs.find(t => t.id === activeTabId);
   if (currentTab && !isSwitchingTab) {
     currentTab.code = editor.getValue();
-    currentTab.filename = document.getElementById("filename-input").value.trim() || "snippet";
+    currentTab.filename = document.getElementById("filename-input").value.trim() || "untitled";
     currentTab.language = document.getElementById("lang-select").value;
     currentTab.isDirty = isDirty;
     currentTab.path = document.getElementById("export-dir").value.trim();
@@ -1047,7 +1051,7 @@ function closeTab(id, force = false) {
   if (tabs.length === 0) {
     activeTabId = null;
     tabIdCounter = 1;
-    createTab("snippet", "javascript", "");
+    createTab("untitled", "javascript", "");
   } else if (activeTabId === id) {
     const nextIdx = Math.min(idx, tabs.length - 1);
     switchTab(tabs[nextIdx].id);
@@ -1269,7 +1273,7 @@ function updateGitBranch() {
 setInterval(updateGitBranch, 30000);
 
 function newFile() {
-  createTab("snippet", "javascript", "");
+  createTab("untitled", "javascript", "");
 }
 
 function openFile() {
@@ -1279,7 +1283,7 @@ function openFile() {
       if (result.error) toast(result.error, "err");
       return;
     }
-    const filename = result.filename || "snippet";
+    const filename = result.filename || "untitled";
     const lang = LANGS[result.language] ? result.language : "javascript";
     const dir = result.path.replace(/[\\/][^\\/]+$/, "");
     createTab(filename, lang, result.code, dir || "");
@@ -1312,7 +1316,7 @@ function saveFile() {
   if (!dir)         { toast("Set a destination folder first", "err"); return; }
 
   const call = window.pywebview
-    ? window.pywebview.api.save_file(dir, filename || "snippet", lang, code)
+    ? window.pywebview.api.save_file(dir, filename || "untitled", lang, code)
     : Promise.resolve({ ok: false, error: "Not running in desktop app" });
 
   call.then(r => {
@@ -1323,7 +1327,7 @@ function saveFile() {
       if (currentTab) {
         currentTab.isDirty = false;
         currentTab.path = dir;
-        currentTab.filename = filename || "snippet";
+        currentTab.filename = filename || "untitled";
       }
       renderTabs();
       updateGitBranch();
@@ -1427,7 +1431,7 @@ function _persistState() {
   const currentTab = tabs.find(t => t.id === activeTabId);
   if (currentTab) {
     currentTab.code = editor.getValue();
-    currentTab.filename = document.getElementById("filename-input").value.trim() || "snippet";
+    currentTab.filename = document.getElementById("filename-input").value.trim() || "untitled";
     currentTab.language = document.getElementById("lang-select").value;
     currentTab.isDirty = isDirty;
     currentTab.path = document.getElementById("export-dir").value.trim();
@@ -1479,7 +1483,7 @@ function _applyState(data) {
     activeTabId = targetId;
     const nextTab = tabs.find(t => t.id === targetId) || tabs[0];
     activeTabId = nextTab.id;
-    document.getElementById("filename-input").value = (nextTab.filename && nextTab.filename !== "snippet") ? nextTab.filename : "";
+    document.getElementById("filename-input").value = (nextTab.filename && nextTab.filename !== "untitled" && nextTab.filename !== "snippet") ? nextTab.filename : "";
     document.getElementById("lang-select").value = nextTab.language || "javascript";
     const def = LANGS[nextTab.language] || LANGS.javascript;
     editor.setOption("mode", def.mode);
@@ -1495,13 +1499,13 @@ function _applyState(data) {
     if (typeof updateLangDropdownActive === "function") updateLangDropdownActive();
     if (typeof updateThemeDropdownActive === "function") updateThemeDropdownActive();
   } else {
-    const filename = data.filename || "snippet";
+    const filename = data.filename || "untitled";
     const lang = (data.language && LANGS[data.language]) ? data.language : "javascript";
     const code = data.code || "";
     tabs = [{ id: 1, filename, language: lang, code, isDirty: false, path: data.export_dir || "" }];
     tabIdCounter = 2;
     activeTabId = 1;
-    document.getElementById("filename-input").value = (filename && filename !== "snippet") ? filename : "";
+    document.getElementById("filename-input").value = (filename && filename !== "untitled" && filename !== "snippet") ? filename : "";
     document.getElementById("lang-select").value = lang;
     const def = LANGS[lang] || LANGS.javascript;
     editor.setOption("mode", def.mode);
@@ -1520,7 +1524,7 @@ function _applyState(data) {
 function _loadState() {
   const checkEmpty = () => {
     if (tabs.length === 0) {
-      createTab("snippet", "javascript", "");
+      createTab("untitled", "javascript", "");
     }
   };
   if (window.pywebview) {
@@ -1610,3 +1614,167 @@ _setupWindowDragging();
 onLangChange("javascript", false);
 window.addEventListener("pywebviewready", _loadState);
 if (!window.pywebview) setTimeout(_loadState, 60);
+
+const COMMAND_PALETTE_ITEMS = [
+  { title: "New Document Tab", category: "Tab", action: () => newFile() },
+  { title: "Close Current Tab", category: "Tab", action: () => closeTab() },
+  { title: "Open File from Disk...", category: "Tab", action: () => openFile() },
+  { title: "Save File to Disk...", category: "Tab", action: () => saveFile() },
+  { title: "Clear Editor Content", category: "Tab", action: () => promptClear() },
+  { title: "Copy Editor Content", category: "Tab", action: () => copyText() },
+  { title: "Toggle Always on Top (Pin / Unpin)", category: "Window", action: () => togglePin() },
+  { title: "Theme: Dusk (Dark)", category: "Theme", action: () => setTheme("dusk") },
+  { title: "Theme: Quartz (Blue Light)", category: "Theme", action: () => setTheme("quartz") },
+  { title: "Theme: Monarch (Warm Light)", category: "Theme", action: () => setTheme("monarch") },
+  { title: "Theme: Aurora (Pastel Dark)", category: "Theme", action: () => setTheme("aurora") },
+  { title: "Theme: Grove (Forest Dark)", category: "Theme", action: () => setTheme("grove") },
+  { title: "Theme: Rose (Pink Dark)", category: "Theme", action: () => setTheme("rose") },
+  { title: "Theme: Contrast (High Contrast Dark)", category: "Theme", action: () => setTheme("contrast") },
+  { title: "Theme: Nord (Arctic Dark)", category: "Theme", action: () => setTheme("nord") },
+  { title: "Theme: Dracula (Vibrant Dark)", category: "Theme", action: () => setTheme("dracula") },
+  { title: "Language: Plain Text (.txt)", category: "Language", action: () => onLangChange("text") },
+  { title: "Language: JavaScript (.js)", category: "Language", action: () => onLangChange("javascript") },
+  { title: "Language: TypeScript (.ts)", category: "Language", action: () => onLangChange("typescript") },
+  { title: "Language: JSON (.json)", category: "Language", action: () => onLangChange("json") },
+  { title: "Language: Python (.py)", category: "Language", action: () => onLangChange("python") },
+  { title: "Language: C / C++ (.cpp)", category: "Language", action: () => onLangChange("c_cpp") },
+  { title: "Language: Java (.java)", category: "Language", action: () => onLangChange("java") },
+  { title: "Language: C# (.cs)", category: "Language", action: () => onLangChange("csharp") },
+  { title: "Language: Rust (.rs)", category: "Language", action: () => onLangChange("rust") },
+  { title: "Language: Go (.go)", category: "Language", action: () => onLangChange("go") },
+  { title: "Language: Bash / Shell (.sh)", category: "Language", action: () => onLangChange("shell") },
+  { title: "Language: HTML (.html)", category: "Language", action: () => onLangChange("html") },
+  { title: "Language: CSS (.css)", category: "Language", action: () => onLangChange("css") },
+  { title: "Language: SQL (.sql)", category: "Language", action: () => onLangChange("sql") },
+  { title: "Language: PHP (.php)", category: "Language", action: () => onLangChange("php") },
+  { title: "Language: Ruby (.rb)", category: "Language", action: () => onLangChange("ruby") },
+  { title: "Language: Swift (.swift)", category: "Language", action: () => onLangChange("swift") },
+  { title: "Language: YAML (.yaml)", category: "Language", action: () => onLangChange("yaml") },
+  { title: "Zoom: Zoom In (+)", category: "View", action: () => zoomEditor(1) },
+  { title: "Zoom: Zoom Out (-)", category: "View", action: () => zoomEditor(-1) },
+  { title: "Zoom: Reset Zoom (100%)", category: "View", action: () => resetZoom() }
+];
+
+let activeCmdPaletteIndex = 0;
+let filteredCmdPaletteItems = [];
+
+function openCommandPalette() {
+  const backdrop = document.getElementById("cmd-palette-backdrop");
+  const input = document.getElementById("cmd-palette-input");
+  if (!backdrop || !input) return;
+  backdrop.classList.remove("hidden");
+  input.value = "";
+  activeCmdPaletteIndex = 0;
+  filterCommandPalette("");
+  setTimeout(() => input.focus(), 10);
+}
+
+function closeCommandPalette() {
+  const backdrop = document.getElementById("cmd-palette-backdrop");
+  if (backdrop) backdrop.classList.add("hidden");
+  if (editor && typeof editor.focus === "function") editor.focus();
+}
+
+function filterCommandPalette(query) {
+  const listEl = document.getElementById("cmd-palette-list");
+  if (!listEl) return;
+  const q = (query || "").trim().toLowerCase();
+  if (!q) {
+    filteredCmdPaletteItems = [...COMMAND_PALETTE_ITEMS];
+  } else {
+    filteredCmdPaletteItems = COMMAND_PALETTE_ITEMS.filter(item => {
+      const titleLower = item.title.toLowerCase();
+      const catLower = item.category.toLowerCase();
+      return titleLower.includes(q) || catLower.includes(q);
+    });
+  }
+  if (activeCmdPaletteIndex >= filteredCmdPaletteItems.length) {
+    activeCmdPaletteIndex = Math.max(0, filteredCmdPaletteItems.length - 1);
+  }
+  renderCommandPaletteList();
+}
+
+function renderCommandPaletteList() {
+  const listEl = document.getElementById("cmd-palette-list");
+  if (!listEl) return;
+  if (filteredCmdPaletteItems.length === 0) {
+    listEl.innerHTML = '<div class="cmd-palette-empty">No matching commands found</div>';
+    return;
+  }
+  let html = "";
+  for (let i = 0; i < filteredCmdPaletteItems.length; i++) {
+    const item = filteredCmdPaletteItems[i];
+    const activeClass = i === activeCmdPaletteIndex ? "CodeMirror-hint-active" : "";
+    html += '<div class="CodeMirror-hint ' + activeClass + '" onclick="executeCommandPaletteItem(' + i + ')" onmousemove="setActiveCmdPaletteIndex(' + i + ')">' +
+            '<span class="hint-icon"></span>' +
+            '<span class="hint-name">' + _escapeHtml(item.title) + '</span>' +
+            '<span class="hint-label">' + _escapeHtml(item.category) + '</span>' +
+            '</div>';
+  }
+  listEl.innerHTML = html;
+  const activeEl = listEl.children[activeCmdPaletteIndex];
+  if (activeEl && typeof activeEl.scrollIntoView === "function") {
+    activeEl.scrollIntoView({ block: "nearest" });
+  }
+}
+
+function setActiveCmdPaletteIndex(index) {
+  if (index === activeCmdPaletteIndex || index < 0 || index >= filteredCmdPaletteItems.length) return;
+  activeCmdPaletteIndex = index;
+  renderCommandPaletteList();
+}
+
+function navigateCommandPalette(dir) {
+  if (filteredCmdPaletteItems.length === 0) return;
+  activeCmdPaletteIndex = (activeCmdPaletteIndex + dir + filteredCmdPaletteItems.length) % filteredCmdPaletteItems.length;
+  renderCommandPaletteList();
+}
+
+function executeCommandPaletteItem(index) {
+  const item = filteredCmdPaletteItems[index];
+  if (!item || typeof item.action !== "function") return;
+  closeCommandPalette();
+  setTimeout(() => item.action(), 20);
+}
+
+function _escapeHtml(str) {
+  return String(str || "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  const input = document.getElementById("cmd-palette-input");
+  if (input) {
+    input.addEventListener("input", (e) => {
+      activeCmdPaletteIndex = 0;
+      filterCommandPalette(e.target.value);
+    });
+    input.addEventListener("keydown", (e) => {
+      if (e.key === "ArrowDown") {
+        e.preventDefault();
+        navigateCommandPalette(1);
+      } else if (e.key === "ArrowUp") {
+        e.preventDefault();
+        navigateCommandPalette(-1);
+      } else if (e.key === "Enter") {
+        e.preventDefault();
+        executeCommandPaletteItem(activeCmdPaletteIndex);
+      } else if (e.key === "Escape") {
+        e.preventDefault();
+        closeCommandPalette();
+      }
+    });
+  }
+});
+
+window.addEventListener("keydown", (e) => {
+  if (((e.ctrlKey || e.metaKey) && e.shiftKey && (e.key === "P" || e.key === "p")) || e.key === "F1") {
+    e.preventDefault();
+    openCommandPalette();
+  } else if (e.key === "Escape") {
+    const backdrop = document.getElementById("cmd-palette-backdrop");
+    if (backdrop && !backdrop.classList.contains("hidden")) {
+      e.preventDefault();
+      closeCommandPalette();
+    }
+  }
+});

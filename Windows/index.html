@@ -41,12 +41,13 @@
 
   <div id="topbar" class="tech-header">
     <div class="header-doc-group">
-      <input id="filename-input" class="doc-title-input" type="text" placeholder="snippet" spellcheck="false" autocomplete="off" maxlength="80">
+      <input id="filename-input" class="doc-title-input" type="text" placeholder="untitled" spellcheck="false" autocomplete="off" maxlength="80">
       <div class="doc-ext-wrapper" onclick="toggleLangDropdown(event)" title="Click to change language">
         <span id="filename-ext" class="doc-title-ext">.js</span>
         <select id="lang-select" style="display: none;" onchange="onLangChange(this.value)">
           <option value="javascript">JavaScript</option>
           <option value="typescript">TypeScript</option>
+          <option value="json">JSON</option>
           <option value="python">Python</option>
           <option value="c_cpp">C / C++</option>
           <option value="java">Java</option>
@@ -66,6 +67,7 @@
         <div id="lang-dropdown-menu" class="custom-dropdown-menu lang-menu hidden" onclick="event.stopPropagation()">
           <div class="custom-dropdown-item" data-key="javascript" onclick="selectLang('javascript', event)"><span>JavaScript</span><span class="ext-label">.js</span></div>
           <div class="custom-dropdown-item" data-key="typescript" onclick="selectLang('typescript', event)"><span>TypeScript</span><span class="ext-label">.ts</span></div>
+          <div class="custom-dropdown-item" data-key="json" onclick="selectLang('json', event)"><span>JSON</span><span class="ext-label">.json</span></div>
           <div class="custom-dropdown-item" data-key="python" onclick="selectLang('python', event)"><span>Python</span><span class="ext-label">.py</span></div>
           <div class="custom-dropdown-item" data-key="c_cpp" onclick="selectLang('c_cpp', event)"><span>C / C++</span><span class="ext-label">.cpp</span></div>
           <div class="custom-dropdown-item" data-key="java" onclick="selectLang('java', event)"><span>Java</span><span class="ext-label">.java</span></div>
@@ -89,8 +91,8 @@
     <div class="header-actions">
       <button class="tool-btn" onclick="openFile()" title="Open file (Ctrl+O)">Open</button>
       <button class="tool-btn" onclick="onRequestClear(event)" title="Clear editor">Clear</button>
-      <button class="tool-btn" onclick="copyAll()" title="Copy snippet">Copy</button>
-      <button class="tool-btn" onclick="saveFile()" title="Save snippet (Ctrl+S)">Save</button>
+      <button class="tool-btn" onclick="copyAll()" title="Copy code">Copy</button>
+      <button class="tool-btn" onclick="saveFile()" title="Save file (Ctrl+S)">Save</button>
       <button id="btn-pin" class="pin-btn" onclick="togglePin()" title="Pin on top">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 17v5"/><path d="M9 11V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v7"/><path d="M5 15h14l-1.5-4H6.5z"/></svg>
       </button>
@@ -174,6 +176,14 @@
     </div>
   </div>
 
+</div>
+<div id="cmd-palette-backdrop" class="cmd-palette-backdrop hidden" onclick="closeCommandPalette()">
+  <div id="cmd-palette-modal" class="cmd-palette-modal" onclick="event.stopPropagation()">
+    <div class="cmd-palette-header">
+      <input type="text" id="cmd-palette-input" class="cmd-palette-input" placeholder="Type a command..." autocomplete="off" spellcheck="false">
+    </div>
+    <div id="cmd-palette-list" class="cmd-palette-list"></div>
+  </div>
 </div>
 <div id="toast"></div>
 
