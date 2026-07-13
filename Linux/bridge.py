@@ -57,7 +57,6 @@ class Bridge:
         self._window = window
 
     def start_drag(self, screen_x, screen_y) -> None:
-        """Mousedown on a drag region — snapshot the starting positions."""
         if not self._window:
             return
         try:
@@ -71,7 +70,6 @@ class Bridge:
         }
 
     def do_drag(self, screen_x, screen_y) -> None:
-        """Mousemove during drag — move window to new absolute position."""
         if not self._drag_origin or not self._window:
             return
         new_x = self._drag_origin["wx"] + int(screen_x) - self._drag_origin["sx"]
@@ -89,7 +87,6 @@ class Bridge:
                 pass
 
     def end_drag(self) -> None:
-        """Mouseup — stop dragging."""
         self._drag_origin = None
 
     def pick_folder(self) -> dict:

@@ -4,6 +4,18 @@ import time
 import threading
 
 _pending_repin_hwnd = None
+_dialog_open = False
+
+
+def set_dialog_open(is_open: bool):
+    global _dialog_open
+    _dialog_open = bool(is_open)
+
+
+def is_dialog_open() -> bool:
+    global _dialog_open
+    return _dialog_open
+
 _u32   = ctypes.windll.user32
 _ENUMPROC = ctypes.WINFUNCTYPE(ctypes.c_bool, wt.HWND, wt.LPARAM)
 
@@ -78,11 +90,15 @@ def _install_drag_filter(hwnd: int, topbar_px: int = _drag_zone_px,
 
     def _proc(h, msg, wp, lp):
         global _pending_repin_hwnd
-        if _pending_repin_hwnd == h:
+        if _pending_repin_hwnd == h and not is_dialog_open():
             if (msg == 0x0006 and (wp & 0xFFFF) == 0) or msg == 0x0008 or (msg == 0x0086 and wp == 0):
                 _pending_repin_hwnd = None
                 _execute_repin(h)
         if msg == _WM_NCHITTEST:
+            parent = _u32.GetParent(h)
+            desktop = _u32.GetDesktopWindow()
+            if parent != 0 and parent != desktop:
+                return _HTCLIENT
             cx = ctypes.c_short(lp & 0xFFFF).value
             cy = ctypes.c_short(lp >> 16).value
             rect = wt.RECT()
@@ -144,7 +160,6 @@ def pin_window_to_desktop(hwnd: int) -> bool:
 
 
 def unpin_from_desktop(hwnd: int) -> bool:
-    """Un-parent from WorkerW, transition to top-level window, set always-on-top."""
     global _pending_repin_hwnd
     _pending_repin_hwnd = None
     try:
@@ -178,17 +193,22 @@ def unpin_from_desktop(hwnd: int) -> bool:
 
 
 def _execute_repin(hwnd: int) -> bool:
+    global _pending_repin_hwnd
+    _pending_repin_hwnd = None
     try:
-        rect = wt.RECT()
-        _u32.GetWindowRect(hwnd, ctypes.byref(rect))
-        x, y = rect.left, rect.top
-        w, h = rect.right - rect.left, rect.bottom - rect.top
-
         _spawn_workerw()
         time.sleep(0.18)
         workerw = _find_workerw()
         if not workerw:
             return False
+
+        if _u32.GetParent(hwnd) == workerw:
+            return True
+
+        rect = wt.RECT()
+        _u32.GetWindowRect(hwnd, ctypes.byref(rect))
+        x, y = rect.left, rect.top
+        w, h = rect.right - rect.left, rect.bottom - rect.top
 
         pt = wt.POINT(x, y)
         _u32.ScreenToClient(workerw, ctypes.byref(pt))
@@ -222,7 +242,6 @@ def _execute_repin(hwnd: int) -> bool:
 
 
 def repin_to_desktop(hwnd: int) -> bool:
-    """Re-parent back to WorkerW, or defer drop until window loses focus if currently foreground."""
     global _pending_repin_hwnd
     fg = _u32.GetForegroundWindow()
     if fg == hwnd or fg == 0:
@@ -234,7 +253,12 @@ def repin_to_desktop(hwnd: int) -> bool:
         def _watch_blur():
             global _pending_repin_hwnd
             while _pending_repin_hwnd == hwnd:
+                if is_dialog_open():
+                    time.sleep(0.08)
+                    continue
                 time.sleep(0.08)
+                if is_dialog_open():
+                    continue
                 curr = _u32.GetForegroundWindow()
                 if curr != hwnd and curr != 0:
                     _pending_repin_hwnd = None
@@ -248,7 +272,6 @@ def repin_to_desktop(hwnd: int) -> bool:
 
 
 def peek_desktop_widget(hwnd: int) -> bool:
-    """Temporarily bring unpinned widget to top-level foreground until it loses focus."""
     global _pending_repin_hwnd
     try:
         rect = wt.RECT()
@@ -280,7 +303,12 @@ def peek_desktop_widget(hwnd: int) -> bool:
         def _watch_blur():
             global _pending_repin_hwnd
             while _pending_repin_hwnd == hwnd:
+                if is_dialog_open():
+                    time.sleep(0.08)
+                    continue
                 time.sleep(0.08)
+                if is_dialog_open():
+                    continue
                 curr = _u32.GetForegroundWindow()
                 if curr != hwnd and curr != 0:
                     _pending_repin_hwnd = None

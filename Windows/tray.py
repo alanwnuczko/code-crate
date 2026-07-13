@@ -10,7 +10,6 @@ _u32 = ctypes.windll.user32
 
 
 def _bundle_path(*parts) -> str:
-    """Resolve a path that lives inside the PyInstaller bundle (or source tree)."""
     if getattr(sys, "frozen", False):
         base = sys._MEIPASS
     else:
@@ -179,7 +178,6 @@ def start(window, on_quit: Callable):
                 pass
 
     def set_pin_state(pinned):
-        """Toggle always-on-top. Called from the bridge when the user clicks Pin."""
         from win32_desktop import unpin_from_desktop, repin_to_desktop
         hwnd = _get_window_hwnd(window)
         if not hwnd:

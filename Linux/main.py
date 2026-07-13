@@ -79,7 +79,6 @@ _DRAG_JS = r"""
 
 
 def _get_screen_size() -> tuple:
-    """Return (width, height) of the primary monitor."""
     try:
         display = Gdk.Display.get_default()
         if display is not None:
@@ -101,7 +100,6 @@ def _get_screen_size() -> tuple:
 
 
 def _force_gtk_decoration():
-    """Find the pywebview GTK window and force standard decorations."""
     try:
         from webview.platforms.gtk import BrowserView
         for instance in BrowserView.instances.values():

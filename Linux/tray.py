@@ -7,7 +7,6 @@ from typing import Callable
 
 
 def _bundle_path(*parts) -> str:
-    """Resolve a path that lives inside the PyInstaller bundle (or source tree)."""
     if getattr(sys, "frozen", False):
         base = Path(sys._MEIPASS)
     else:
@@ -19,11 +18,6 @@ def _bundle_path(*parts) -> str:
 
 
 def _load_tray_icon():
-    """Load the tray icon, converting .ico → PIL Image if needed.
-
-    On Linux, pystray with AppIndicator requires a PNG-compatible image.
-    Pillow handles the .ico → internal conversion transparently.
-    """
     from PIL import Image
 
     ico_path = _bundle_path("assets", "tray.ico")
@@ -46,17 +40,10 @@ def _load_tray_icon():
 
 
 def start(window, on_quit: Callable):
-    """Start the system-tray icon in a background thread.
-
-    On Linux the tray toggle simply calls ``window.show()`` /
-    ``window.hide()`` — the Win32 collapse/expand animations are not
-    available.
-    """
     visible = [True]
     icon_ref = [None]
 
     def _collapse_to_tray():
-        """Hide the window to the tray."""
         try:
             window.hide()
             visible[0] = False
@@ -64,7 +51,6 @@ def start(window, on_quit: Callable):
             print(f"[tray] Error collapsing: {exc}")
 
     def _expand_from_tray():
-        """Show the window from the tray."""
         try:
             window.show()
             visible[0] = True

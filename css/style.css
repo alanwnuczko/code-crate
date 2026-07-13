@@ -219,9 +219,6 @@
   --active-fill: rgba(255,255,255,0.1);
 }
 
-/* ─────────────────────────────────────────────────
-   Base
-   ───────────────────────────────────────────────── */
 
 html, body {
   height: 100%;
@@ -248,9 +245,6 @@ html, body {
   box-shadow: var(--shadow-app);
 }
 
-/* ─────────────────────────────────────────────────
-   Header / Topbar
-   ───────────────────────────────────────────────── */
 
 #topbar {
   display: flex;
@@ -272,8 +266,7 @@ html, body {
 }
 #topbar div { cursor: default; }
 
-/* These selects are now hidden under custom wrappers.
-   Keep bare minimum styles for the native option dropdown. */
+
 #lang-select option,
 #theme-select option {
   background: var(--bg-raised);
@@ -295,9 +288,6 @@ html, body {
   font-family: var(--mono);
 }
 
-/* ─────────────────────────────────────────────────
-   Editor
-   ───────────────────────────────────────────────── */
 
 #editor-wrap {
   flex: 1;
@@ -357,7 +347,7 @@ html, body {
   font-size: 11px;
 }
 
-/* Active line */
+
 .cm-s-cs-dusk .CodeMirror-activeline-background,
 .cm-s-cs-quartz .CodeMirror-activeline-background,
 .cm-s-cs-aurora .CodeMirror-activeline-background,
@@ -391,7 +381,7 @@ html, body {
   background: rgba(139,233,253,0.03) !important;
 }
 
-/* Cursor & selection */
+
 .CodeMirror-cursor { border-left: 1.5px solid var(--teal) !important; }
 .CodeMirror-selected { background: rgba(255,184,107,0.16) !important; }
 .cm-s-cs-quartz .CodeMirror-selected { background: rgba(2,132,199,0.15) !important; }
@@ -401,7 +391,7 @@ html, body {
 .cm-s-cs-rose .CodeMirror-selected { background: rgba(240,171,252,0.16) !important; }
 .cm-s-cs-contrast .CodeMirror-selected { background: rgba(255,209,102,0.2) !important; }
 
-/* ── Syntax: Dusk ── */
+
 .cm-s-cs-dusk .cm-keyword,
 .cm-s-cs-dusk .cm-tag { color: #ff7ab6; }
 .cm-s-cs-dusk .cm-atom,
@@ -420,7 +410,7 @@ html, body {
 .cm-s-cs-dusk .cm-qualifier { color: #ab9df2; }
 .cm-s-cs-dusk .cm-error { color: #ffe4e8; background: rgba(255,107,122,0.16); }
 
-/* ── Syntax: Quartz ── */
+
 .cm-s-cs-quartz .cm-keyword,
 .cm-s-cs-quartz .cm-tag { color: #0284c7; font-weight: 600; }
 .cm-s-cs-quartz .cm-atom,
@@ -439,7 +429,7 @@ html, body {
 .cm-s-cs-quartz .cm-qualifier { color: #6366f1; }
 .cm-s-cs-quartz .cm-error { color: #991b1b; background: rgba(220,38,38,0.1); }
 
-/* ── Syntax: Monarch ── */
+
 .cm-s-cs-monarch .cm-keyword,
 .cm-s-cs-monarch .cm-tag { color: #b84b29; font-weight: 600; }
 .cm-s-cs-monarch .cm-atom,
@@ -458,7 +448,7 @@ html, body {
 .cm-s-cs-monarch .cm-qualifier { color: #6b5b95; }
 .cm-s-cs-monarch .cm-error { color: #991b1b; background: rgba(211,47,47,0.1); }
 
-/* ── Syntax: Aurora ── */
+
 .cm-s-cs-aurora .cm-keyword,
 .cm-s-cs-aurora .cm-tag { color: #c4b5fd; }
 .cm-s-cs-aurora .cm-atom,
@@ -477,7 +467,7 @@ html, body {
 .cm-s-cs-aurora .cm-qualifier { color: #93c5fd; }
 .cm-s-cs-aurora .cm-error { color: #ffe4e6; background: rgba(251,113,133,0.16); }
 
-/* ── Syntax: Grove ── */
+
 .cm-s-cs-grove .cm-keyword,
 .cm-s-cs-grove .cm-tag { color: #d9f99d; }
 .cm-s-cs-grove .cm-atom,
@@ -496,7 +486,7 @@ html, body {
 .cm-s-cs-grove .cm-qualifier { color: #93c5fd; }
 .cm-s-cs-grove .cm-error { color: #ffe4e6; background: rgba(251,113,133,0.16); }
 
-/* ── Syntax: Rose ── */
+
 .cm-s-cs-rose .cm-keyword,
 .cm-s-cs-rose .cm-tag { color: #f0abfc; }
 .cm-s-cs-rose .cm-atom,
@@ -515,7 +505,7 @@ html, body {
 .cm-s-cs-rose .cm-qualifier { color: #93c5fd; }
 .cm-s-cs-rose .cm-error { color: #ffe4e6; background: rgba(251,113,133,0.16); }
 
-/* ── Syntax: Contrast ── */
+
 .cm-s-cs-contrast .cm-keyword,
 .cm-s-cs-contrast .cm-tag { color: #ff9df5; }
 .cm-s-cs-contrast .cm-atom,
@@ -534,7 +524,7 @@ html, body {
 .cm-s-cs-contrast .cm-qualifier { color: #b9a7ff; }
 .cm-s-cs-contrast .cm-error { color: #050505; background: #ff7b72; }
 
-/* ── Syntax: Nord ── */
+
 .cm-s-cs-nord .cm-keyword,
 .cm-s-cs-nord .cm-tag { color: #81a1c1; }
 .cm-s-cs-nord .cm-atom,
@@ -553,7 +543,7 @@ html, body {
 .cm-s-cs-nord .cm-qualifier { color: #8fbcbb; }
 .cm-s-cs-nord .cm-error { color: #eceff4; background: #bf616a; }
 
-/* ── Syntax: Dracula ── */
+
 .cm-s-cs-dracula .cm-keyword,
 .cm-s-cs-dracula .cm-tag { color: #ff79c6; }
 .cm-s-cs-dracula .cm-atom,
@@ -572,7 +562,7 @@ html, body {
 .cm-s-cs-dracula .cm-qualifier { color: #8be9fd; }
 .cm-s-cs-dracula .cm-error { color: #f8f8f2; background: #ff5555; }
 
-/* ── Editor chrome ── */
+
 .CodeMirror {
   padding-right: 4px;
   position: relative;
@@ -629,9 +619,6 @@ html, body {
 .CodeMirror-vscrollbar,
 .CodeMirror-hscrollbar { display: none !important; }
 
-/* ─────────────────────────────────────────────────
-   Header chrome
-   ───────────────────────────────────────────────── */
 
 .tech-header {
   display: flex;
@@ -646,7 +633,7 @@ html, body {
   user-select: none;
 }
 
-/* ── Filename group: [ snippet  .js ▾ ] ── */
+
 .header-doc-group {
   display: flex;
   align-items: center;
@@ -685,10 +672,7 @@ html, body {
   font-family: var(--sans);
 }
 
-/* ── Language selector: acts as an interactive control ──
-   Inspired by VS Code status bar language picker,
-   GitHub Desktop branch selector, Linear workspace switcher.
-   Shows extension + chevron, pill hover state. */
+
 .doc-ext-wrapper {
   position: relative;
   display: flex;
@@ -721,7 +705,6 @@ html, body {
   letter-spacing: 0.01em;
 }
 
-/* CSS-only chevron – no duplicate icons */
 .doc-ext-wrapper::after {
   content: "";
   display: block;
@@ -737,26 +720,84 @@ html, body {
   border-top-color: var(--txt-2);
 }
 
-.ext-hidden-select {
+.custom-dropdown-menu {
   position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  opacity: 0;
-  cursor: pointer;
-  appearance: none;
-  -webkit-appearance: none;
+  z-index: 2000;
+  max-height: 280px;
+  overflow-y: auto;
+  background: var(--bg-surface, color-mix(in srgb, var(--bg-raised) 65%, transparent));
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45), 0 2px 8px rgba(0, 0, 0, 0.3);
+  padding: 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 0.15s ease, transform 0.15s ease;
 }
-.ext-hidden-select option {
-  background: var(--bg-raised);
-  color: var(--txt);
+.custom-dropdown-menu.hidden {
+  display: none !important;
+  opacity: 0;
+  pointer-events: none;
+}
+.lang-menu {
+  top: calc(100% + 6px);
+  right: 0;
+  min-width: 155px;
+}
+.theme-menu {
+  bottom: calc(100% + 6px);
+  right: 0;
+  min-width: 130px;
+  max-height: none;
+  overflow-y: visible;
+}
+.custom-dropdown-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 6px 10px;
+  border-radius: 5px;
   font-family: var(--sans);
   font-size: 12px;
+  color: var(--txt-2);
+  cursor: pointer;
+  transition: background 0.12s ease, color 0.12s ease;
+  user-select: none;
+  white-space: nowrap;
 }
-
-/* ─────────────────────────────────────────────────
-   Buttons
-   ───────────────────────────────────────────────── */
+.custom-dropdown-item:hover {
+  background: var(--hover-fill);
+  color: var(--txt);
+}
+.custom-dropdown-item.active {
+  background: var(--active-fill);
+  color: var(--txt);
+  font-weight: 500;
+}
+.custom-dropdown-item .ext-label {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--txt-3);
+}
+.custom-dropdown-item.active .ext-label {
+  color: var(--accent);
+}
+.custom-dropdown-menu::-webkit-scrollbar {
+  width: 5px;
+}
+.custom-dropdown-menu::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 3px;
+}
+.custom-dropdown-menu::-webkit-scrollbar-track {
+  background: transparent;
+}
 
 .header-actions {
   display: flex;
@@ -818,9 +859,6 @@ html, body {
   filter: brightness(1.08);
 }
 
-/* ─────────────────────────────────────────────────
-   Tab Bar
-   ───────────────────────────────────────────────── */
 
 .doc-tab-bar {
   display: flex;
@@ -936,9 +974,6 @@ html, body {
   color: var(--txt-2);
 }
 
-/* ─────────────────────────────────────────────────
-   Footer
-   ───────────────────────────────────────────────── */
 
 .tech-footer {
   display: flex;
@@ -1018,9 +1053,6 @@ html, body {
   background: var(--active-fill);
 }
 
-/* ─────────────────────────────────────────────────
-   Status Bar
-   ───────────────────────────────────────────────── */
 
 .footer-status-row {
   display: flex;
@@ -1059,19 +1091,13 @@ html, body {
 .theme-dropdown-wrap:hover {
   background: var(--hover-fill);
 }
-.status-select {
-  appearance: none;
-  -webkit-appearance: none;
-  background: transparent;
-  background-image: none;
-  border: none;
+.status-select-display {
   color: var(--txt-2);
   font-family: var(--sans);
   font-size: 11px;
   font-weight: 500;
   padding: 0 14px 0 0;
-  cursor: pointer;
-  outline: none;
+  user-select: none;
 }
 .theme-chevron {
   position: absolute;
@@ -1079,7 +1105,6 @@ html, body {
   pointer-events: none;
   color: var(--txt-3);
 }
-.status-select option { background: var(--bg-raised); color: var(--txt); }
 
 #cursor-pos { font-family: var(--sans); font-size: 11px; color: var(--txt-3); letter-spacing: 0.01em; }
 #cursor-pos b { color: var(--txt-2); font-weight: 500; }
@@ -1105,20 +1130,19 @@ html, body {
   text-overflow: ellipsis;
 }
 
-/* ─────────────────────────────────────────────────
-   Confirm Modal
-   ───────────────────────────────────────────────── */
 
 .app-confirm-modal {
   position: fixed;
   top: 64px;
   left: 50%;
   transform: translateX(-50%);
-  background: var(--bg-raised);
+  background: var(--bg-surface, color-mix(in srgb, var(--bg-raised) 65%, transparent));
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
   border: 1px solid var(--border);
   border-radius: 8px;
   padding: 14px 18px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35), 0 0 0 1px rgba(128,128,128,0.08);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45), 0 2px 8px rgba(0, 0, 0, 0.3);
   z-index: var(--z-modal);
   min-width: 240px;
 }
@@ -1183,16 +1207,15 @@ html, body {
   filter: brightness(0.92);
 }
 
-/* ─────────────────────────────────────────────────
-   Toast
-   ───────────────────────────────────────────────── */
 
 #toast {
   position: fixed;
   bottom: 36px;
   left: 50%;
   transform: translateX(-50%) translateY(4px);
-  background: var(--bg-raised);
+  background: var(--bg-surface, color-mix(in srgb, var(--bg-raised) 65%, transparent));
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
   border: 1px solid var(--border);
   color: var(--txt);
   font-size: 12px;
@@ -1205,7 +1228,7 @@ html, body {
   transition: opacity var(--transition-normal), transform var(--transition-normal);
   white-space: nowrap;
   z-index: var(--z-toast);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45), 0 2px 8px rgba(0, 0, 0, 0.3);
   letter-spacing: 0.005em;
 }
 #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
@@ -1216,40 +1239,65 @@ html, body {
   color: var(--txt);
 }
 
-/* ─────────────────────────────────────────────────
-   Autocomplete hints
-   ───────────────────────────────────────────────── */
 
+ul.CodeMirror-hints,
+div.CodeMirror-hints,
 .CodeMirror-hints {
-  background: var(--bg-raised);
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  padding: 4px;
+  background: var(--bg-surface, color-mix(in srgb, var(--bg-raised) 65%, transparent)) !important;
+  backdrop-filter: blur(16px) !important;
+  -webkit-backdrop-filter: blur(16px) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: 8px !important;
+  padding: 4px !important;
   font-family: var(--mono);
   font-size: 13px;
   max-height: 220px;
   overflow-y: auto;
-  box-shadow: 0 4px 16px rgba(0,0,0,0.25);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45), 0 2px 8px rgba(0, 0, 0, 0.3) !important;
   z-index: var(--z-dropdown);
+  list-style: none !important;
+  margin: 0 !important;
 }
+
+li.CodeMirror-hint,
+div.CodeMirror-hint,
 .CodeMirror-hint {
-  padding: 3px 10px;
-  color: var(--txt-2);
+  padding: 4px 10px !important;
+  margin: 1px 0 !important;
+  color: var(--txt-2) !important;
   cursor: pointer;
-  display: flex;
+  display: flex !important;
   align-items: center;
   gap: 8px;
   white-space: nowrap;
   line-height: 1.5;
-  border-radius: 4px;
+  border-radius: 5px !important;
+  transition: background 0.12s ease, color 0.12s ease !important;
 }
+
+li.CodeMirror-hint:hover,
+div.CodeMirror-hint:hover,
+.CodeMirror-hint:hover {
+  background: var(--hover-fill) !important;
+  color: var(--txt) !important;
+}
+
+li.CodeMirror-hint-active,
+div.CodeMirror-hint-active,
+ul.CodeMirror-hints li.CodeMirror-hint-active,
+.CodeMirror-hints .CodeMirror-hint-active,
 .CodeMirror-hint-active {
-  background: var(--teal-dim);
-  color: var(--txt);
+  background: var(--teal-dim) !important;
+  color: var(--txt) !important;
+  font-weight: 500 !important;
 }
+
+li.CodeMirror-hint-active .hint-label,
+div.CodeMirror-hint-active .hint-label,
 .CodeMirror-hint-active .hint-label {
-  color: var(--txt-3);
+  color: var(--teal, var(--txt-3)) !important;
 }
+
 .hint-icon {
   width: 10px;
   height: 10px;
@@ -1259,12 +1307,18 @@ html, body {
   background: transparent;
   flex-shrink: 0;
 }
+
+li.CodeMirror-hint-active .hint-icon,
+div.CodeMirror-hint-active .hint-icon,
 .CodeMirror-hint-active .hint-icon {
-  background: var(--teal);
+  background: var(--teal) !important;
+  border-color: var(--teal) !important;
 }
+
 .hint-name {
   flex: 1;
 }
+
 .hint-label {
   color: var(--txt-3);
   font-size: 11px;
@@ -1272,9 +1326,6 @@ html, body {
   padding-left: 20px;
 }
 
-/* ─────────────────────────────────────────────────
-   Reduced motion
-   ───────────────────────────────────────────────── */
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {

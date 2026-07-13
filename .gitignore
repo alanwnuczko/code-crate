@@ -1,4 +1,6 @@
 __pycache__/
+Linux/__pycache__/
+Windows/__pycache__/
 .idea/
 .venv/
 state.json

@@ -42,9 +42,9 @@
   <div id="topbar" class="pywebview-drag-region tech-header">
     <div class="header-doc-group">
       <input id="filename-input" class="doc-title-input" type="text" placeholder="snippet" spellcheck="false" autocomplete="off" maxlength="80">
-      <div class="doc-ext-wrapper" title="Click to change language">
+      <div class="doc-ext-wrapper" onclick="toggleLangDropdown(event)" title="Click to change language">
         <span id="filename-ext" class="doc-title-ext">.js</span>
-        <select id="lang-select" class="ext-hidden-select" onchange="onLangChange(this.value)">
+        <select id="lang-select" style="display: none;" onchange="onLangChange(this.value)">
           <option value="javascript">JavaScript</option>
           <option value="typescript">TypeScript</option>
           <option value="python">Python</option>
@@ -63,6 +63,25 @@
           <option value="yaml">YAML</option>
           <option value="text">Plain Text</option>
         </select>
+        <div id="lang-dropdown-menu" class="custom-dropdown-menu lang-menu hidden" onclick="event.stopPropagation()">
+          <div class="custom-dropdown-item" data-key="javascript" onclick="selectLang('javascript', event)"><span>JavaScript</span><span class="ext-label">.js</span></div>
+          <div class="custom-dropdown-item" data-key="typescript" onclick="selectLang('typescript', event)"><span>TypeScript</span><span class="ext-label">.ts</span></div>
+          <div class="custom-dropdown-item" data-key="python" onclick="selectLang('python', event)"><span>Python</span><span class="ext-label">.py</span></div>
+          <div class="custom-dropdown-item" data-key="c_cpp" onclick="selectLang('c_cpp', event)"><span>C / C++</span><span class="ext-label">.cpp</span></div>
+          <div class="custom-dropdown-item" data-key="java" onclick="selectLang('java', event)"><span>Java</span><span class="ext-label">.java</span></div>
+          <div class="custom-dropdown-item" data-key="csharp" onclick="selectLang('csharp', event)"><span>C#</span><span class="ext-label">.cs</span></div>
+          <div class="custom-dropdown-item" data-key="rust" onclick="selectLang('rust', event)"><span>Rust</span><span class="ext-label">.rs</span></div>
+          <div class="custom-dropdown-item" data-key="go" onclick="selectLang('go', event)"><span>Go</span><span class="ext-label">.go</span></div>
+          <div class="custom-dropdown-item" data-key="shell" onclick="selectLang('shell', event)"><span>Bash / Shell</span><span class="ext-label">.sh</span></div>
+          <div class="custom-dropdown-item" data-key="css" onclick="selectLang('css', event)"><span>CSS</span><span class="ext-label">.css</span></div>
+          <div class="custom-dropdown-item" data-key="html" onclick="selectLang('html', event)"><span>HTML</span><span class="ext-label">.html</span></div>
+          <div class="custom-dropdown-item" data-key="sql" onclick="selectLang('sql', event)"><span>SQL</span><span class="ext-label">.sql</span></div>
+          <div class="custom-dropdown-item" data-key="php" onclick="selectLang('php', event)"><span>PHP</span><span class="ext-label">.php</span></div>
+          <div class="custom-dropdown-item" data-key="ruby" onclick="selectLang('ruby', event)"><span>Ruby</span><span class="ext-label">.rb</span></div>
+          <div class="custom-dropdown-item" data-key="swift" onclick="selectLang('swift', event)"><span>Swift</span><span class="ext-label">.swift</span></div>
+          <div class="custom-dropdown-item" data-key="yaml" onclick="selectLang('yaml', event)"><span>YAML</span><span class="ext-label">.yml</span></div>
+          <div class="custom-dropdown-item" data-key="text" onclick="selectLang('text', event)"><span>Plain Text</span><span class="ext-label">.txt</span></div>
+        </div>
       </div>
       <div id="ext-badge" style="display: none;">.js</div>
     </div>
@@ -98,8 +117,9 @@
       </div>
       <div class="status-right">
         <span class="theme-label">Theme</span>
-        <div class="theme-dropdown-wrap">
-          <select id="theme-select" class="status-select" onchange="onThemeChange(this.value)" title="Theme">
+        <div class="theme-dropdown-wrap" onclick="toggleThemeDropdown(event)" title="Click to change theme">
+          <span id="theme-display" class="status-select-display">Ember</span>
+          <select id="theme-select" style="display: none;" onchange="onThemeChange(this.value)">
             <option value="dusk">Ember</option>
             <option value="quartz">Quartz</option>
             <option value="monarch">Monarch</option>
@@ -111,6 +131,17 @@
             <option value="dracula">Dracula</option>
           </select>
           <svg class="theme-chevron" width="10" height="6" viewBox="0 0 10 6" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M1 1l4 4 4-4"/></svg>
+          <div id="theme-dropdown-menu" class="custom-dropdown-menu theme-menu hidden" onclick="event.stopPropagation()">
+            <div class="custom-dropdown-item" data-key="dusk" onclick="selectTheme('dusk', event)"><span>Ember</span></div>
+            <div class="custom-dropdown-item" data-key="quartz" onclick="selectTheme('quartz', event)"><span>Quartz</span></div>
+            <div class="custom-dropdown-item" data-key="monarch" onclick="selectTheme('monarch', event)"><span>Monarch</span></div>
+            <div class="custom-dropdown-item" data-key="aurora" onclick="selectTheme('aurora', event)"><span>Aurora</span></div>
+            <div class="custom-dropdown-item" data-key="grove" onclick="selectTheme('grove', event)"><span>Grove</span></div>
+            <div class="custom-dropdown-item" data-key="rose" onclick="selectTheme('rose', event)"><span>Rose</span></div>
+            <div class="custom-dropdown-item" data-key="contrast" onclick="selectTheme('contrast', event)"><span>Contrast</span></div>
+            <div class="custom-dropdown-item" data-key="nord" onclick="selectTheme('nord', event)"><span>Nord</span></div>
+            <div class="custom-dropdown-item" data-key="dracula" onclick="selectTheme('dracula', event)"><span>Dracula</span></div>
+          </div>
         </div>
       </div>
     </div>
