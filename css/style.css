@@ -298,6 +298,33 @@ html, body {
   -webkit-app-region: no-drag;
 }
 
+#editor-wrap.drag-over {
+  outline: 2px dashed var(--acc) !important;
+  outline-offset: -4px;
+  box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.4);
+  transition: all 0.2s ease;
+}
+#editor-wrap.drag-over::after {
+  content: "Drop file to open in new tab";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: var(--glass);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--gbd);
+  padding: 14px 24px;
+  border-radius: 12px;
+  color: var(--txt);
+  font-family: var(--sans);
+  font-size: 14px;
+  font-weight: 500;
+  pointer-events: none;
+  z-index: 999;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+}
+
 .CodeMirror {
   height: 100% !important;
   font-family: var(--mono) !important;

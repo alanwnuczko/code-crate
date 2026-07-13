@@ -12,6 +12,10 @@ except TypeError:
     Gtk.init([])
 
 import webview
+try:
+    import webview.dom
+except Exception:
+    pass
 
 from bridge import Bridge
 from tray import start as start_tray
@@ -140,6 +144,30 @@ def main():
 
     bridge.set_window(window)
 
+    def on_dropped(files):
+        import json
+        for f in files:
+            path_str = ""
+            if isinstance(f, str):
+                path_str = f
+            elif isinstance(f, dict):
+                path_str = f.get("pywebviewFullPath") or f.get("path") or f.get("_path") or f.get("name") or ""
+            else:
+                for attr in ("pywebviewFullPath", "pywebview_full_path", "path", "_path", "filename", "name"):
+                    val = getattr(f, attr, None)
+                    if val and isinstance(val, str) and os.path.exists(val):
+                        path_str = val
+                        break
+                if not path_str:
+                    path_str = str(f)
+            res = bridge.open_file_by_path(path_str)
+            if res.get("ok"):
+                payload = json.dumps(res)
+                try:
+                    window.evaluate_js(f"window.onNativeDrop && window.onNativeDrop({payload})")
+                except Exception as e:
+                    print(f"[drop] error evaluating js: {e}")
+
     def on_shown():
         time.sleep(0.5)
         GLib.idle_add(_force_gtk_decoration)
@@ -153,6 +181,12 @@ def main():
         window.destroy()
 
     start_tray(window, quit_app)
+
+    try:
+        webview.dom._dnd_state['num_listeners'] = 999
+    except Exception:
+        pass
+
     webview.start(on_shown, gui="gtk", debug=False)
 
 

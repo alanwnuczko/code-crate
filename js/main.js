@@ -868,7 +868,7 @@ setTimeout(() => {
       if (isSwitchingTab) return;
       const currentTab = tabs.find(t => t.id === activeTabId);
       if (currentTab) {
-        currentTab.filename = fi.value.trim() || "untitled";
+        currentTab.filename = _stripExtension(fi.value.trim(), currentTab.language) || "untitled";
         renderTabs();
         _scheduleSave();
       }
@@ -998,7 +998,7 @@ function switchTab(id) {
   activeTabId = id;
   const nextTab = tabs.find(t => t.id === id);
   if (nextTab) {
-    document.getElementById("filename-input").value = (nextTab.filename && nextTab.filename !== "untitled" && nextTab.filename !== "snippet") ? nextTab.filename : "";
+    document.getElementById("filename-input").value = (nextTab.filename && nextTab.filename !== "untitled" && nextTab.filename !== "snippet") ? _stripExtension(nextTab.filename, nextTab.language) : "";
     document.getElementById("lang-select").value = nextTab.language || "javascript";
     const def = LANGS[nextTab.language] || LANGS.javascript;
     editor.setOption("mode", def.mode);
@@ -1016,18 +1016,43 @@ function switchTab(id) {
   _persistState();
 }
 
+function _stripExtension(filename, lang) {
+  if (!filename || filename === "untitled" || filename === "snippet") return filename || "untitled";
+  let name = filename.trim();
+  const def = LANGS[lang] || LANGS.javascript;
+  if (def && def.ext && name.toLowerCase().endsWith(def.ext.toLowerCase())) {
+    return name.slice(0, -def.ext.length);
+  }
+  const dotIdx = name.lastIndexOf(".");
+  if (dotIdx > 0) {
+    const ext = name.slice(dotIdx).toLowerCase();
+    for (const val of Object.values(LANGS)) {
+      if (val.ext && val.ext.toLowerCase() === ext) {
+        return name.slice(0, dotIdx);
+      }
+    }
+  }
+  return name;
+}
+
+let lastCreateTabTime = 0;
 function createTab(filename = "untitled", lang = "javascript", code = "", path = null) {
+  const now = Date.now();
+  if (now - lastCreateTabTime < 250) return;
+  lastCreateTabTime = now;
   const currentTab = tabs.find(t => t.id === activeTabId);
   if (currentTab && !isSwitchingTab) {
     currentTab.code = editor.getValue();
-    currentTab.filename = document.getElementById("filename-input").value.trim() || "untitled";
+    currentTab.filename = _stripExtension(document.getElementById("filename-input").value.trim(), document.getElementById("lang-select").value) || "untitled";
     currentTab.language = document.getElementById("lang-select").value;
     currentTab.isDirty = isDirty;
     currentTab.path = document.getElementById("export-dir").value.trim();
   }
   const id = tabIdCounter++;
-  const effectivePath = path !== null ? path : "";
-  tabs.push({ id, filename, language: lang, code, isDirty: false, path: effectivePath });
+  const currentDir = document.getElementById("export-dir") ? document.getElementById("export-dir").value.trim() : "";
+  const effectivePath = (path !== null && path !== "") ? path : currentDir;
+  const cleanFilename = _stripExtension(filename, lang);
+  tabs.push({ id, filename: cleanFilename, language: lang, code, isDirty: false, path: effectivePath });
   switchTab(id);
   toast("New tab", "inf");
 }
@@ -1327,7 +1352,7 @@ function saveFile() {
       if (currentTab) {
         currentTab.isDirty = false;
         currentTab.path = dir;
-        currentTab.filename = filename || "untitled";
+        currentTab.filename = _stripExtension(filename || "untitled", lang);
       }
       renderTabs();
       updateGitBranch();
@@ -1550,9 +1575,22 @@ function toast(msg, type) {
 }
 
 window.addEventListener("keydown", (e) => {
-  if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "s") {
-    e.preventDefault();
-    saveFile();
+  if (e.repeat) return;
+  if (e.ctrlKey || e.metaKey) {
+    const k = e.key.toLowerCase();
+    if (!e.shiftKey && k === "s") {
+      e.preventDefault();
+      saveFile();
+    } else if (!e.shiftKey && k === "t") {
+      e.preventDefault();
+      createTab();
+    } else if (!e.shiftKey && k === "o") {
+      e.preventDefault();
+      openFile();
+    } else if (!e.shiftKey && k === "w") {
+      e.preventDefault();
+      if (activeTabId !== null) closeTab(activeTabId);
+    }
   }
 });
 
@@ -1767,6 +1805,7 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 window.addEventListener("keydown", (e) => {
+  if (e.repeat) return;
   if (((e.ctrlKey || e.metaKey) && e.shiftKey && (e.key === "P" || e.key === "p")) || e.key === "F1") {
     e.preventDefault();
     openCommandPalette();
@@ -1778,3 +1817,120 @@ window.addEventListener("keydown", (e) => {
     }
   }
 });
+
+function _detectLangFromFilename(filename) {
+  const ext = (filename.slice(filename.lastIndexOf(".")) || "").toLowerCase();
+  for (const [key, val] of Object.entries(LANGS)) {
+    if (val.ext === ext) return key;
+  }
+  if (ext === ".c" || ext === ".h" || ext === ".hpp") return "c_cpp";
+  if (ext === ".yaml" || ext === ".yml") return "yaml";
+  if (ext === ".htm") return "html";
+  return "text";
+}
+
+window.addEventListener("dragover", (e) => {
+  e.preventDefault();
+  e.stopPropagation();
+  if (e.dataTransfer) e.dataTransfer.dropEffect = "copy";
+  const ew = document.getElementById("editor-wrap");
+  if (ew && !ew.classList.contains("drag-over")) ew.classList.add("drag-over");
+}, true);
+
+window.addEventListener("dragleave", (e) => {
+  e.preventDefault();
+  e.stopPropagation();
+  if (e.relatedTarget === null || e.target === document.documentElement) {
+    const ew = document.getElementById("editor-wrap");
+    if (ew) ew.classList.remove("drag-over");
+  }
+}, true);
+
+window.onNativeDrop = function(res) {
+  if (!res || !res.ok) return;
+  const filename = res.filename || "untitled";
+  window.__lastNativeDropFilename = filename;
+  const lang = res.language || "javascript";
+  const dir = res.path ? res.path.replace(/[\\/][^\\/]+$/, "") : "";
+  const cleanName = _stripExtension(filename, lang);
+  createTab(cleanName, lang, res.code, dir || "");
+  toast("Opened " + cleanName, "ok");
+};
+
+window.addEventListener("drop", (e) => {
+  e.preventDefault();
+  const ew = document.getElementById("editor-wrap");
+  if (ew) ew.classList.remove("drag-over");
+
+
+  const dt = e.dataTransfer;
+  if (dt && dt.files && dt.files.length > 0 &&
+      window.chrome && window.chrome.webview &&
+      typeof window.chrome.webview.postMessageWithAdditionalObjects === "function") {
+    try {
+      window.chrome.webview.postMessageWithAdditionalObjects("FilesDropped", dt.files);
+    } catch (_) {}
+  }
+
+  const files = dt && dt.files;
+  if (!files || files.length === 0) return;
+
+  function _readAndCreateTab(file, filename, lang, dir) {
+    const reader = new FileReader();
+    reader.onload = (evt) => {
+      const code = evt.target.result || "";
+      const cleanName = _stripExtension(filename, lang);
+      createTab(cleanName, lang, code, dir ? dir : null);
+      toast("Opened " + cleanName, "ok");
+    };
+    reader.onerror = () => {
+      toast("Failed to read " + filename, "err");
+    };
+    reader.readAsText(file);
+  }
+
+  Array.from(files).forEach(file => {
+    const filename = file.name || "untitled";
+    const lang = _detectLangFromFilename(filename);
+    const initialDir = (file.path || file._path || file.webkitRelativePath || "").replace(/[\\/][^\\/]+$/, "");
+
+    setTimeout(() => {
+      if (window.__lastNativeDropFilename === (filename.replace(/\.[^/.]+$/, "") || filename) || window.__lastNativeDropFilename === filename) {
+        window.__lastNativeDropFilename = null;
+        return;
+      }
+
+      if (window.pywebview && window.pywebview.api && window.pywebview.api.get_dropped_file_path) {
+        window.pywebview.api.get_dropped_file_path(filename).then(fullPath => {
+          if (fullPath && typeof fullPath === "string" && fullPath.trim() !== "") {
+            if (window.pywebview.api.open_file_by_path) {
+              window.pywebview.api.open_file_by_path(fullPath).then(res => {
+                if (res && res.ok) {
+                  const dir = fullPath.replace(/[\\/][^\\/]+$/, "");
+                  const cleanName = _stripExtension(res.filename || filename, res.language || lang);
+                  createTab(cleanName, res.language || lang, res.code, dir || "");
+                  toast("Opened " + cleanName, "ok");
+                } else {
+                  const dir = fullPath.replace(/[\\/][^\\/]+$/, "");
+                  _readAndCreateTab(file, filename, lang, dir);
+                }
+              }).catch(() => {
+                const dir = fullPath.replace(/[\\/][^\\/]+$/, "");
+                _readAndCreateTab(file, filename, lang, dir);
+              });
+            } else {
+              const dir = fullPath.replace(/[\\/][^\\/]+$/, "");
+              _readAndCreateTab(file, filename, lang, dir);
+            }
+          } else {
+            _readAndCreateTab(file, filename, lang, initialDir);
+          }
+        }).catch(() => {
+          _readAndCreateTab(file, filename, lang, initialDir);
+        });
+      } else {
+        _readAndCreateTab(file, filename, lang, initialDir);
+      }
+    }, 120);
+  });
+}, true);

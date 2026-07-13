@@ -77,10 +77,23 @@ def _find_workerw() -> int:
 
 
 def _install_drag_filter(hwnd: int, topbar_px: int = _drag_zone_px,
-                          footer_px: int = _drag_zone_px):
+                          footer_px: int = _drag_zone_px, drop_callback=None):
     global _wndproc_orig, _wndproc_new
     if _wndproc_orig is not None:
         return
+
+    if drop_callback:
+        try:
+            ctypes.windll.shell32.DragAcceptFiles(hwnd, True)
+            def _cb_child(child_hwnd, _):
+                try:
+                    ctypes.windll.shell32.DragAcceptFiles(child_hwnd, True)
+                except Exception:
+                    pass
+                return True
+            _u32.EnumChildWindows(hwnd, _ENUMPROC(_cb_child), 0)
+        except Exception as e:
+            print(f"[win32] DragAcceptFiles error: {e}")
 
     WNDPROCTYPE = ctypes.WINFUNCTYPE(
         ctypes.c_long, wt.HWND, wt.UINT, wt.WPARAM, wt.LPARAM
@@ -90,6 +103,24 @@ def _install_drag_filter(hwnd: int, topbar_px: int = _drag_zone_px,
 
     def _proc(h, msg, wp, lp):
         global _pending_repin_hwnd
+        if msg == 0x0233:  # WM_DROPFILES
+            try:
+                hdrop = wp
+                count = ctypes.windll.shell32.DragQueryFileW(hdrop, 0xFFFFFFFF, None, 0)
+                paths = []
+                for i in range(count):
+                    length = ctypes.windll.shell32.DragQueryFileW(hdrop, i, None, 0)
+                    if length > 0:
+                        buf = ctypes.create_unicode_buffer(length + 1)
+                        ctypes.windll.shell32.DragQueryFileW(hdrop, i, buf, length + 1)
+                        paths.append(buf.value)
+                ctypes.windll.shell32.DragFinish(hdrop)
+                if paths and drop_callback:
+                    threading.Thread(target=drop_callback, args=(paths,), daemon=True).start()
+            except Exception as e:
+                print(f"[win32] WM_DROPFILES error: {e}")
+            return 0
+
         if _pending_repin_hwnd == h and not is_dialog_open():
             if (msg == 0x0006 and (wp & 0xFFFF) == 0) or msg == 0x0008 or (msg == 0x0086 and wp == 0):
                 _pending_repin_hwnd = None

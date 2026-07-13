@@ -5,6 +5,10 @@ import ctypes.wintypes as wt
 from ctypes import c_int, POINTER
 
 import webview
+try:
+    import webview.dom
+except Exception:
+    pass
 
 from bridge import Bridge
 from tray import start as start_tray
@@ -128,6 +132,30 @@ def main():
 
     bridge.set_window(window)
 
+    def on_dropped(files):
+        import json
+        for f in files:
+            path_str = ""
+            if isinstance(f, str):
+                path_str = f
+            elif isinstance(f, dict):
+                path_str = f.get("pywebviewFullPath") or f.get("path") or f.get("_path") or f.get("name") or ""
+            else:
+                for attr in ("pywebviewFullPath", "pywebview_full_path", "path", "_path", "filename", "name"):
+                    val = getattr(f, attr, None)
+                    if val and isinstance(val, str) and os.path.exists(val):
+                        path_str = val
+                        break
+                if not path_str:
+                    path_str = str(f)
+            res = bridge.open_file_by_path(path_str)
+            if res.get("ok"):
+                payload = json.dumps(res)
+                try:
+                    window.evaluate_js(f"window.onNativeDrop && window.onNativeDrop({payload})")
+                except Exception as e:
+                    print(f"[drop] error evaluating js: {e}")
+
     hwnd_ref = [None]
 
     def quit_app(icon=None):
@@ -148,7 +176,7 @@ def main():
             _hide_from_taskbar(hwnd)
 
             from win32_desktop import _install_drag_filter
-            _install_drag_filter(hwnd)
+            _install_drag_filter(hwnd, drop_callback=on_dropped)
 
             state = bridge.load_note()
             should_pin = state.get("pinned", True)
@@ -157,6 +185,12 @@ def main():
                 window.evaluate_js(f"window.__setPinUI && window.__setPinUI({str(should_pin).lower()})")
             except Exception:
                 pass
+
+    try:
+        webview.dom._dnd_state['num_listeners'] = 999
+    except Exception:
+        pass
+
     webview.start(on_shown, debug=False)
 
 
