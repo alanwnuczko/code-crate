@@ -67,7 +67,27 @@ class Bridge:
             return {"ok": False, "error": "Window not ready"}
         try:
             from webview import FileDialog
-            result = self._window.create_file_dialog(FileDialog.FOLDER)
+            from win32_desktop import set_dialog_open, peek_desktop_widget
+            hwnd = getattr(self._window, '_cached_hwnd', None)
+            if not hwnd:
+                from main import _resolve_hwnd
+                hwnd = _resolve_hwnd(self._window)
+
+            parent = ctypes.windll.user32.GetParent(int(hwnd)) if hwnd else 0
+            desktop = ctypes.windll.user32.GetDesktopWindow()
+            is_unpinned = (parent != 0 and parent != desktop)
+
+            set_dialog_open(True)
+            try:
+                result = self._window.create_file_dialog(FileDialog.FOLDER)
+            finally:
+                set_dialog_open(False)
+                if hwnd:
+                    if is_unpinned:
+                        peek_desktop_widget(int(hwnd))
+                    else:
+                        ctypes.windll.user32.SetForegroundWindow(int(hwnd))
+
             if result:
                 return {"ok": True, "path": result[0]}
             return {"ok": False, "error": ""}
@@ -79,15 +99,35 @@ class Bridge:
             return {"ok": False, "error": "Window not ready"}
         try:
             from webview import FileDialog
-            file_types = (
-                "Code files (*.js;*.ts;*.py;*.cpp;*.c;*.h;*.java;*.cs;*.rs;"
-                "*.go;*.sh;*.css;*.html;*.sql;*.php;*.rb;*.swift;*.yaml;*.yml;"
-                "*.jsx;*.tsx;*.json;*.toml;*.txt)",
-                "All files (*.*)",
-            )
-            result = self._window.create_file_dialog(
-                FileDialog.OPEN, allow_multiple=False, file_types=file_types
-            )
+            from win32_desktop import set_dialog_open, peek_desktop_widget
+            hwnd = getattr(self._window, '_cached_hwnd', None)
+            if not hwnd:
+                from main import _resolve_hwnd
+                hwnd = _resolve_hwnd(self._window)
+
+            parent = ctypes.windll.user32.GetParent(int(hwnd)) if hwnd else 0
+            desktop = ctypes.windll.user32.GetDesktopWindow()
+            is_unpinned = (parent != 0 and parent != desktop)
+
+            set_dialog_open(True)
+            try:
+                file_types = (
+                    "Code files (*.js;*.ts;*.py;*.cpp;*.c;*.h;*.java;*.cs;*.rs;"
+                    "*.go;*.sh;*.css;*.html;*.sql;*.php;*.rb;*.swift;*.yaml;*.yml;"
+                    "*.jsx;*.tsx;*.json;*.toml;*.txt)",
+                    "All files (*.*)",
+                )
+                result = self._window.create_file_dialog(
+                    FileDialog.OPEN, allow_multiple=False, file_types=file_types
+                )
+            finally:
+                set_dialog_open(False)
+                if hwnd:
+                    if is_unpinned:
+                        peek_desktop_widget(int(hwnd))
+                    else:
+                        ctypes.windll.user32.SetForegroundWindow(int(hwnd))
+
             if not result:
                 return {"ok": False, "error": ""}
 
@@ -166,6 +206,10 @@ class Bridge:
                 from main import _resolve_hwnd
                 hwnd = _resolve_hwnd(self._window)
             if hwnd:
+                parent = ctypes.windll.user32.GetParent(int(hwnd))
+                desktop = ctypes.windll.user32.GetDesktopWindow()
+                if parent != 0 and parent != desktop:
+                    return {"ok": False, "reason": "child_window"}
                 ctypes.windll.user32.ReleaseCapture()
                 ctypes.windll.user32.SendMessageW(int(hwnd), 0x00A1, 2, 0)
                 return {"ok": True}
@@ -185,6 +229,12 @@ class Bridge:
                 ctypes.windll.user32.GetWindowRect(int(hwnd), ctypes.byref(rect))
                 new_x = rect.left + int(dx)
                 new_y = rect.top + int(dy)
+                parent = ctypes.windll.user32.GetParent(int(hwnd))
+                desktop = ctypes.windll.user32.GetDesktopWindow()
+                if parent != 0 and parent != desktop:
+                    pt = wt.POINT(new_x, new_y)
+                    ctypes.windll.user32.ScreenToClient(parent, ctypes.byref(pt))
+                    new_x, new_y = pt.x, pt.y
                 SWP_NOSIZE     = 0x0001
                 SWP_NOZORDER   = 0x0004
                 SWP_NOACTIVATE = 0x0010
