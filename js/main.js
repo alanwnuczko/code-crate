@@ -1000,6 +1000,7 @@ function switchTab(id) {
     editor.setOption("mode", def.mode);
     document.getElementById("ext-badge").textContent = def.ext;
     document.getElementById("filename-ext").textContent = def.ext;
+    if (typeof updateLangDropdownActive === "function") updateLangDropdownActive();
     editor.setValue(nextTab.code || "");
     editor.clearHistory();
     isDirty = nextTab.isDirty || false;
@@ -1044,6 +1045,7 @@ function closeTab(id, force = false) {
 
   tabs.splice(idx, 1);
   if (tabs.length === 0) {
+    activeTabId = null;
     tabIdCounter = 1;
     createTab("snippet", "javascript", "");
   } else if (activeTabId === id) {
@@ -1074,9 +1076,12 @@ function confirmCloseTab() {
 function onLangChange(key, shouldPersist = true) {
   const def = LANGS[key];
   if (!def) return;
+  const select = document.getElementById("lang-select");
+  if (select && select.value !== key) select.value = key;
   editor.setOption("mode", def.mode);
   document.getElementById("ext-badge").textContent    = def.ext;
   document.getElementById("filename-ext").textContent = def.ext;
+  if (typeof updateLangDropdownActive === "function") updateLangDropdownActive();
   if (!isSwitchingTab) {
     const currentTab = tabs.find(t => t.id === activeTabId);
     if (currentTab) {
@@ -1090,7 +1095,9 @@ function onLangChange(key, shouldPersist = true) {
 function _setTheme(key, shouldPersist) {
   const next = THEMES[key] ? key : "dusk";
   document.documentElement.dataset.theme = next;
-  document.getElementById("theme-select").value = next;
+  const select = document.getElementById("theme-select");
+  if (select && select.value !== next) select.value = next;
+  if (typeof updateThemeDropdownActive === "function") updateThemeDropdownActive();
   editor.setOption("theme", THEMES[next].cm);
   editor.refresh();
   if (shouldPersist) _persistState();
@@ -1099,6 +1106,95 @@ function _setTheme(key, shouldPersist) {
 function onThemeChange(key) {
   _setTheme(key, true);
 }
+
+function toggleLangDropdown(event) {
+  if (event) event.stopPropagation();
+  const menu = document.getElementById("lang-dropdown-menu");
+  if (!menu) return;
+  const isHidden = menu.classList.contains("hidden");
+  closeAllCustomDropdowns();
+  if (isHidden) {
+    menu.classList.remove("hidden");
+    updateLangDropdownActive();
+  }
+}
+
+function closeLangDropdown() {
+  const menu = document.getElementById("lang-dropdown-menu");
+  if (menu) menu.classList.add("hidden");
+}
+
+function selectLang(key, event) {
+  if (event) event.stopPropagation();
+  closeLangDropdown();
+  const select = document.getElementById("lang-select");
+  if (select) select.value = key;
+  onLangChange(key);
+}
+
+function updateLangDropdownActive() {
+  const select = document.getElementById("lang-select");
+  const currentKey = select ? select.value : "javascript";
+  const items = document.querySelectorAll("#lang-dropdown-menu .custom-dropdown-item");
+  items.forEach(item => {
+    item.classList.toggle("active", item.dataset.key === currentKey);
+  });
+}
+
+function toggleThemeDropdown(event) {
+  if (event) event.stopPropagation();
+  const menu = document.getElementById("theme-dropdown-menu");
+  if (!menu) return;
+  const isHidden = menu.classList.contains("hidden");
+  closeAllCustomDropdowns();
+  if (isHidden) {
+    menu.classList.remove("hidden");
+    updateThemeDropdownActive();
+  }
+}
+
+function closeThemeDropdown() {
+  const menu = document.getElementById("theme-dropdown-menu");
+  if (menu) menu.classList.add("hidden");
+}
+
+function selectTheme(key, event) {
+  if (event) event.stopPropagation();
+  closeThemeDropdown();
+  const select = document.getElementById("theme-select");
+  if (select) select.value = key;
+  onThemeChange(key);
+}
+
+function updateThemeDropdownActive() {
+  const select = document.getElementById("theme-select");
+  const currentKey = select ? select.value : "dusk";
+  const display = document.getElementById("theme-display");
+  const themeNames = {
+    dusk: "Ember", quartz: "Quartz", monarch: "Monarch", aurora: "Aurora",
+    grove: "Grove", rose: "Rose", contrast: "Contrast", nord: "Nord", dracula: "Dracula"
+  };
+  if (display) display.textContent = themeNames[currentKey] || "Ember";
+  const items = document.querySelectorAll("#theme-dropdown-menu .custom-dropdown-item");
+  items.forEach(item => {
+    item.classList.toggle("active", item.dataset.key === currentKey);
+  });
+}
+
+function closeAllCustomDropdowns() {
+  closeLangDropdown();
+  closeThemeDropdown();
+}
+
+window.addEventListener("click", (e) => {
+  if (!e.target.closest(".doc-ext-wrapper") && !e.target.closest("#lang-dropdown-menu")) {
+    closeLangDropdown();
+  }
+  if (!e.target.closest(".theme-dropdown-wrap") && !e.target.closest("#theme-dropdown-menu")) {
+    closeThemeDropdown();
+  }
+});
+
 
 function togglePin() {
   isPinned = !isPinned;
@@ -1396,6 +1492,8 @@ function _applyState(data) {
     isSwitchingTab = false;
     renderTabs();
     updateGitBranch();
+    if (typeof updateLangDropdownActive === "function") updateLangDropdownActive();
+    if (typeof updateThemeDropdownActive === "function") updateThemeDropdownActive();
   } else {
     const filename = data.filename || "snippet";
     const lang = (data.language && LANGS[data.language]) ? data.language : "javascript";
@@ -1414,6 +1512,8 @@ function _applyState(data) {
     isDirty = false;
     renderTabs();
     updateGitBranch();
+    if (typeof updateLangDropdownActive === "function") updateLangDropdownActive();
+    if (typeof updateThemeDropdownActive === "function") updateThemeDropdownActive();
   }
 }
 
@@ -1492,7 +1592,7 @@ function _setupWindowDragging() {
     if (!el) return;
     el.addEventListener("mousedown", (e) => {
       if (e.button !== 0) return;
-      if (e.target.closest("button, input, select, option, .doc-ext-wrapper, .theme-dropdown-wrap, .path-input-wrap")) return;
+      if (e.target.closest("button, input, select, option, .doc-ext-wrapper, .theme-dropdown-wrap, .custom-dropdown-menu, .path-input-wrap")) return;
       isDragging = true;
       lastX = e.screenX;
       lastY = e.screenY;

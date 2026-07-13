@@ -160,7 +160,6 @@ def pin_window_to_desktop(hwnd: int) -> bool:
 
 
 def unpin_from_desktop(hwnd: int) -> bool:
-    """Un-parent from WorkerW, transition to top-level window, set always-on-top."""
     global _pending_repin_hwnd
     _pending_repin_hwnd = None
     try:
@@ -243,7 +242,6 @@ def _execute_repin(hwnd: int) -> bool:
 
 
 def repin_to_desktop(hwnd: int) -> bool:
-    """Re-parent back to WorkerW, or defer drop until window loses focus if currently foreground."""
     global _pending_repin_hwnd
     fg = _u32.GetForegroundWindow()
     if fg == hwnd or fg == 0:
@@ -274,7 +272,6 @@ def repin_to_desktop(hwnd: int) -> bool:
 
 
 def peek_desktop_widget(hwnd: int) -> bool:
-    """Temporarily bring unpinned widget to top-level foreground until it loses focus."""
     global _pending_repin_hwnd
     try:
         rect = wt.RECT()

@@ -199,7 +199,6 @@ class Bridge:
             return {"ok": False, "error": str(exc)}
 
     def start_drag(self) -> dict:
-        """Initiate native Win32 window drag loop."""
         try:
             hwnd = getattr(self._window, '_cached_hwnd', None)
             if not hwnd:
@@ -218,7 +217,6 @@ class Bridge:
         return {"ok": False}
 
     def move_window_by(self, dx: int, dy: int) -> dict:
-        """Precisely move window by delta pixels in screen coordinates."""
         try:
             hwnd = getattr(self._window, '_cached_hwnd', None)
             if not hwnd:
@@ -248,7 +246,6 @@ class Bridge:
         return {"ok": False}
 
     def get_git_branch(self, directory: str) -> dict:
-        """Read the current Git branch from a directory's .git/HEAD file."""
         if not directory:
             return {"ok": False}
         try:
