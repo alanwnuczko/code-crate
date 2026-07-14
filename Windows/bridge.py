@@ -219,6 +219,30 @@ class Bridge:
         except OSError as exc:
             return {"ok": False, "error": str(exc)}
 
+    def create_folder(self, parent: str, name: str) -> dict:
+        if not parent:
+            return {"ok": False, "error": "No parent folder provided"}
+        if not os.path.isdir(parent):
+            return {"ok": False, "error": f"Parent folder not found: {parent}"}
+
+        base_name = (name or "code-crate").strip()
+        # Basic sanitization for folder name
+        base_name = "".join(c for c in base_name if c.isalnum() or c in (" ", "-", "_", ".")).strip()
+        if not base_name:
+            base_name = "code-crate"
+
+        dest = os.path.join(parent, base_name)
+        counter = 1
+        while os.path.exists(dest):
+            dest = os.path.join(parent, f"{base_name} ({counter})")
+            counter += 1
+
+        try:
+            os.makedirs(dest)
+            return {"ok": True, "path": dest}
+        except Exception as exc:
+            return {"ok": False, "error": str(exc)}
+
     def toggle_pin(self, pinned: bool) -> dict:
         try:
             if not self._pin_callback:

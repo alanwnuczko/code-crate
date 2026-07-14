@@ -1363,6 +1363,128 @@ function saveFile() {
   });
 }
 
+async function saveAllTabs() {
+  if (!tabs || tabs.length === 0) {
+    toast("No tabs to save", "inf");
+    return;
+  }
+
+  let parent = document.getElementById("export-dir").value.trim();
+
+  if (!parent) {
+    if (window.pywebview && window.pywebview.api && window.pywebview.api.pick_folder) {
+      try {
+        const result = await window.pywebview.api.pick_folder();
+        if (result && result.ok && result.path) {
+          parent = result.path;
+        } else {
+          return;
+        }
+      } catch (_) {
+        toast("Folder selection failed", "err");
+        return;
+      }
+    } else {
+      toast("Set a destination folder first", "err");
+      return;
+    }
+  }
+
+  if (!parent) {
+    toast("No destination folder", "err");
+    return;
+  }
+
+  const first = tabs[0] || {};
+  let defaultName = (first.filename && first.filename !== "untitled") ? first.filename : "code-crate";
+  const folderName = await showFolderNameModal(defaultName);
+  if (!folderName) {
+    return;
+  }
+
+  let dir = parent;
+  if (window.pywebview && window.pywebview.api && window.pywebview.api.create_folder) {
+    try {
+      const createRes = await window.pywebview.api.create_folder(parent, folderName);
+      if (createRes && createRes.ok && createRes.path) {
+        dir = createRes.path;
+        document.getElementById("export-dir").value = dir;
+        onExportDirChange(dir);
+        _persistState();
+      } else {
+        toast(createRes && createRes.error ? createRes.error : "Failed to create folder", "err");
+        return;
+      }
+    } catch (_) {
+      toast("Could not create subfolder", "err");
+      return;
+    }
+  } else {
+    const sep = parent.includes("\\") ? "\\" : "/";
+    dir = parent.endsWith(sep) ? parent + folderName : parent + sep + folderName;
+  }
+
+  const currentTab = tabs.find(t => t.id === activeTabId);
+  if (currentTab) {
+    currentTab.code = editor.getValue();
+    currentTab.filename = _stripExtension(document.getElementById("filename-input").value.trim(), currentTab.language) || "untitled";
+    currentTab.language = document.getElementById("lang-select").value;
+    currentTab.path = dir;
+    currentTab.isDirty = isDirty;
+  }
+
+  const usedNames = new Set();
+  const results = [];
+
+  for (const tab of tabs) {
+    let base = (tab.filename || "untitled").trim() || "untitled";
+    const lang = tab.language || "text";
+    let candidate = base;
+    let counter = 1;
+    while (usedNames.has(candidate.toLowerCase())) {
+      candidate = `${base} (${counter++})`;
+    }
+    usedNames.add(candidate.toLowerCase());
+
+    const code = tab.code || "";
+
+    try {
+      const call = window.pywebview && window.pywebview.api
+        ? window.pywebview.api.save_file(dir, candidate, lang, code)
+        : Promise.resolve({ ok: false, error: "Not running in desktop app" });
+
+      const r = await call;
+
+      if (r && r.ok) {
+        tab.isDirty = false;
+        tab.path = dir;
+        tab.filename = _stripExtension(candidate, lang);
+        results.push({ ok: true, name: (r.path || candidate).split(/[\\/]/).pop() });
+      } else {
+        results.push({ ok: false, name: candidate, error: (r && r.error) || "unknown" });
+      }
+    } catch (e) {
+      results.push({ ok: false, name: candidate, error: e.message || e });
+    }
+  }
+
+  renderTabs();
+  updateGitBranch();
+  _persistState();
+
+  const saved = results.filter(r => r.ok).length;
+  const failed = results.length - saved;
+  const folderDisplay = dir.split(/[\\/]/).pop() || "folder";
+
+  if (saved > 0 && failed === 0) {
+    toast(`Saved ${saved} file${saved !== 1 ? "s" : ""} to "${folderDisplay}"`, "ok");
+  } else if (saved > 0) {
+    toast(`Saved ${saved}, ${failed} failed`, "err");
+  } else {
+    toast("Failed to save tabs", "err");
+  }
+}
+
 function clearAll() {
   if (!editor.getValue().trim()) return;
   editor.setValue("");
@@ -1409,6 +1531,33 @@ function confirmClear() {
   cancelClear();
 }
 
+let pendingFolderResolve = null;
+function showFolderNameModal(defaultName) {
+  const modal = document.getElementById("folder-name-modal");
+  const input = document.getElementById("folder-name-input");
+  if (!modal || !input) return Promise.resolve(null);
+  input.value = defaultName || "";
+  modal.classList.remove("hidden");
+  setTimeout(() => { input.focus(); input.select(); }, 10);
+  input.onkeydown = function(e) {
+    if (e.key === "Enter") { e.preventDefault(); confirmFolderName(); }
+    if (e.key === "Escape") { e.preventDefault(); cancelFolderName(); }
+  };
+  return new Promise(function(resolve) { pendingFolderResolve = resolve; });
+}
+function cancelFolderName() {
+  const modal = document.getElementById("folder-name-modal");
+  if (modal) modal.classList.add("hidden");
+  if (pendingFolderResolve) { pendingFolderResolve(null); pendingFolderResolve = null; }
+}
+function confirmFolderName() {
+  const modal = document.getElementById("folder-name-modal");
+  const input = document.getElementById("folder-name-input");
+  const value = input ? input.value.trim() : "";
+  if (modal) modal.classList.add("hidden");
+  if (pendingFolderResolve) { pendingFolderResolve(value || null); pendingFolderResolve = null; }
+}
+
 window.addEventListener("click", (e) => {
   const menu = document.getElementById("hamburger-menu");
   const btnHam = document.getElementById("btn-hamburger");
@@ -1433,6 +1582,15 @@ window.addEventListener("click", (e) => {
     const closeBtn = e.target.closest ? e.target.closest('.doc-tab-close') : null;
     if (box && !box.contains(e.target) && !closeBtn) {
       cancelCloseTab();
+    }
+  }
+
+  const folderModal = document.getElementById("folder-name-modal");
+  if (folderModal && !folderModal.classList.contains("hidden")) {
+    const box = folderModal.querySelector(".app-confirm-box");
+    const folderBtn = e.target.closest ? e.target.closest('[onclick*="FolderName"]') : null;
+    if (box && !box.contains(e.target) && !folderBtn) {
+      cancelFolderName();
     }
   }
 });
@@ -1658,6 +1816,7 @@ const COMMAND_PALETTE_ITEMS = [
   { title: "Close Current Tab", category: "Tab", action: () => closeTab() },
   { title: "Open File from Disk...", category: "Tab", action: () => openFile() },
   { title: "Save File to Disk...", category: "Tab", action: () => saveFile() },
+  { title: "Save All Tabs as Folder...", category: "Tab", action: () => saveAllTabs() },
   { title: "Clear Editor Content", category: "Tab", action: () => promptClear() },
   { title: "Copy Editor Content", category: "Tab", action: () => copyText() },
   { title: "Toggle Always on Top (Pin / Unpin)", category: "Window", action: () => togglePin() },
@@ -1814,6 +1973,12 @@ window.addEventListener("keydown", (e) => {
     if (backdrop && !backdrop.classList.contains("hidden")) {
       e.preventDefault();
       closeCommandPalette();
+    } else {
+      const folderM = document.getElementById("folder-name-modal");
+      if (folderM && !folderM.classList.contains("hidden")) {
+        e.preventDefault();
+        cancelFolderName();
+      }
     }
   }
 });

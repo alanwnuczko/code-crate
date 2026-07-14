@@ -115,7 +115,7 @@
     </div>
     <div class="footer-status-row">
       <div class="status-left">
-        <div id="cursor-pos">Ln <b id="ln">1</b>, Col <b id="col">1</b></div>
+        <div id="cursor-pos">Ln <b id="ln">1</b>, Col <b id="col">1</b> <span class="cmd-hint" onclick="openCommandPalette(); event.stopPropagation && event.stopPropagation();" title="Open command palette">Ctrl+Shift+P or F1</span></div>
       </div>
       <div class="status-right">
         <span class="theme-label">Theme</span>
@@ -165,6 +165,17 @@
       <div class="popover-buttons">
         <button class="btn cancel-btn" onclick="cancelCloseTab()">Cancel</button>
         <button class="btn confirm-btn" onclick="confirmCloseTab()">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="folder-name-modal" class="app-confirm-modal hidden">
+    <div class="app-confirm-box">
+      <div class="popover-text">Folder name</div>
+      <input id="folder-name-input" type="text" class="folder-name-input" spellcheck="false" autocomplete="off" />
+      <div class="popover-buttons">
+        <button class="btn cancel-btn" onclick="cancelFolderName()">Cancel</button>
+        <button class="btn confirm-btn" onclick="confirmFolderName()">Create</button>
       </div>
     </div>
   </div>
