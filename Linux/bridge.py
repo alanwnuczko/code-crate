@@ -157,10 +157,16 @@ class Bridge:
         try:
             import urllib.parse, webview.dom
             paths = webview.dom._dnd_state.get('paths', [])
+            target = filename.strip()
             for item in list(paths):
-                if item[0] == filename or urllib.parse.unquote(item[0]) == filename:
+                raw_name = str(item[0]).strip()
+                unquoted_name = urllib.parse.unquote(raw_name).strip()
+                if raw_name == target or unquoted_name == target:
                     paths.remove(item)
-                    return item[1]
+                    full_p = str(item[1]).strip()
+                    if full_p.startswith("file://"):
+                        full_p = full_p.replace("file://", "")
+                    return urllib.parse.unquote(full_p).strip()
         except Exception as e:
             print(f"[bridge] get_dropped_file_path error: {e}")
         return ""

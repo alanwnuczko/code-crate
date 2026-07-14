@@ -1135,6 +1135,7 @@ function _setTheme(key, shouldPersist) {
 function onThemeChange(key) {
   _setTheme(key, true);
 }
+window.setTheme = onThemeChange;
 
 function toggleLangDropdown(event) {
   if (event) event.stopPropagation();
