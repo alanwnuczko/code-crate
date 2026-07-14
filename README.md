@@ -55,8 +55,8 @@ Expand abbreviations into complete code structures as you type.
 
 | Platform | Version | Download |
 |----------|----------|----------|
-| Windows 11 | v2.1 | [CodeCrateWindows.zip](https://github.com/alanwnuczko/code-crate/releases/tag/v2.1) |
-| Linux | v2.1 | [CodeCrateLinux.tar.xz](https://github.com/alanwnuczko/code-crate/releases/tag/v2.1) |
+| Windows 11 | v2.1 | [CodeCrateWindows.zip](https://github.com/alanwnuczko/code-crate/releases/tag/v2.2) |
+| Linux | v2.1 | [CodeCrateLinux.tar.xz](https://github.com/alanwnuczko/code-crate/releases/tag/v2.2) |
 
 ---
 
@@ -76,7 +76,7 @@ Execute the following command from the project root:
 pyinstaller --noconfirm --onedir --windowed `
   --name "CodeCrate" `
   --icon "assets/tray.ico" `
-  --add-data "Windows/index.html;." `
+  --add-data "Windows/index.html;Windows" `
   --add-data "assets;assets" `
   --add-data "css;css" `
   --add-data "js;js" `
@@ -101,8 +101,8 @@ Execute the following command from the project root:
 ```bash
 pyinstaller --noconfirm --onedir --windowed \
   --name "CodeCrate" \
-  --icon "assets/tray.png" \
-  --add-data "Linux/index.html:." \
+  --icon "assets/tray.ico" \
+  --add-data "Linux/index.html:Linux" \
   --add-data "assets:assets" \
   --add-data "css:css" \
   --add-data "js:js" \
