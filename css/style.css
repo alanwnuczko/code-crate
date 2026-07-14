@@ -1135,6 +1135,19 @@ html, body {
 
 #cursor-pos { font-family: var(--sans); font-size: 11px; color: var(--txt-3); letter-spacing: 0.01em; }
 #cursor-pos b { color: var(--txt-2); font-weight: 500; }
+.cmd-hint {
+  margin-left: 10px;
+  font-size: 10px;
+  opacity: 0.6;
+  font-family: var(--sans);
+  user-select: none;
+  white-space: nowrap;
+  cursor: pointer;
+}
+.cmd-hint:hover {
+  opacity: 0.85;
+  text-decoration: underline;
+}
 
 .git-branch-indicator {
   display: inline-flex;
@@ -1233,8 +1246,22 @@ html, body {
 .confirm-btn:active {
   filter: brightness(0.92);
 }
-
-
+.folder-name-input {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 6px 10px;
+  color: var(--txt);
+  font-family: var(--sans);
+  font-size: 13px;
+  width: 100%;
+  outline: none;
+  text-align: center;
+}
+.folder-name-input:focus {
+  border-color: var(--teal-border);
+}
+#folder-name-modal { min-width: 280px; }
 #toast {
   position: fixed;
   bottom: 36px;

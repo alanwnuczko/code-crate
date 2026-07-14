@@ -55,8 +55,8 @@ Expand abbreviations into complete code structures as you type.
 
 | Platform | Version | Download |
 |----------|----------|----------|
-| Windows 11 | v2.1 | [CodeCrateWindows.zip](https://github.com/alanwnuczko/code-crate/releases/tag/v2.1) |
-| Linux | v2.1 | [CodeCrateLinux.tar.xz](https://github.com/alanwnuczko/code-crate/releases/tag/v2.1) |
+| Windows 11 | v2.2 | [CodeCrateWindows.zip](https://github.com/alanwnuczko/code-crate/releases/tag/v2.2) |
+| Linux | v2.2 | [CodeCrateLinux.tar.xz](https://github.com/alanwnuczko/code-crate/releases/tag/v2.2) |
 
 ---
 
@@ -76,7 +76,7 @@ Execute the following command from the project root:
 pyinstaller --noconfirm --onedir --windowed `
   --name "CodeCrate" `
   --icon "assets/tray.ico" `
-  --add-data "Windows/index.html;." `
+  --add-data "Windows/index.html;Windows" `
   --add-data "assets;assets" `
   --add-data "css;css" `
   --add-data "js;js" `
@@ -89,7 +89,7 @@ pyinstaller --noconfirm --onedir --windowed `
 ```bash
 # Ubuntu/Debian system dependencies
 sudo apt update
-sudo apt install -y python3-gi python3-gi-cairo gir1.2-gtk-3.0 gir1.2-webkit2-4.1 libgirepository1.0-dev gcc libcairo2-dev pkg-config python3-dev
+sudo apt install -y python3-gi python3-gi-cairo gir1.2-gtk-3.0 gir1.2-webkit2-4.1 libgirepository-2.0-dev libgirepository1.0-dev gcc libcairo2-dev pkg-config python3-dev
 
 # Python dependencies
 pip install pyinstaller pywebview pystray pillow pygobject
@@ -99,12 +99,20 @@ pip install pyinstaller pywebview pystray pillow pygobject
 Execute the following command from the project root:
 
 ```bash
-pyinstaller --noconfirm --onedir --windowed \
+pyinstaller --noconfirm --onedir \
   --name "CodeCrate" \
-  --icon "assets/tray.png" \
-  --add-data "Linux/index.html:." \
+  --icon "assets/tray.ico" \
+  --add-data "Linux/index.html:Linux" \
   --add-data "assets:assets" \
   --add-data "css:css" \
   --add-data "js:js" \
+  --collect-all gi \
+  --collect-all webview \
+  --collect-all pystray \
+  --hidden-import gi.repository.Gtk \
+  --hidden-import gi.repository.Gdk \
+  --hidden-import gi.repository.WebKit2 \
+  --hidden-import gi.repository.GLib \
+  --hidden-import pystray._gtk \
   "Linux/main.py"
 ```

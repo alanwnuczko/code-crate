@@ -170,10 +170,16 @@ class Bridge:
         try:
             import urllib.parse, webview.dom
             paths = webview.dom._dnd_state.get('paths', [])
+            target = filename.strip()
             for item in list(paths):
-                if item[0] == filename or urllib.parse.unquote(item[0]) == filename:
+                raw_name = str(item[0]).strip()
+                unquoted_name = urllib.parse.unquote(raw_name).strip()
+                if raw_name == target or unquoted_name == target:
                     paths.remove(item)
-                    return item[1]
+                    full_p = str(item[1]).strip()
+                    if full_p.startswith("file://"):
+                        full_p = full_p.replace("file://", "")
+                    return urllib.parse.unquote(full_p).strip()
         except Exception as e:
             print(f"[bridge] get_dropped_file_path error: {e}")
         return ""
@@ -217,6 +223,30 @@ class Bridge:
                 f.write(code)
             return {"ok": True, "path": dest}
         except OSError as exc:
+            return {"ok": False, "error": str(exc)}
+
+    def create_folder(self, parent: str, name: str) -> dict:
+        if not parent:
+            return {"ok": False, "error": "No parent folder provided"}
+        if not os.path.isdir(parent):
+            return {"ok": False, "error": f"Parent folder not found: {parent}"}
+
+        base_name = (name or "code-crate").strip()
+        # Basic sanitization for folder name
+        base_name = "".join(c for c in base_name if c.isalnum() or c in (" ", "-", "_", ".")).strip()
+        if not base_name:
+            base_name = "code-crate"
+
+        dest = os.path.join(parent, base_name)
+        counter = 1
+        while os.path.exists(dest):
+            dest = os.path.join(parent, f"{base_name} ({counter})")
+            counter += 1
+
+        try:
+            os.makedirs(dest)
+            return {"ok": True, "path": dest}
+        except Exception as exc:
             return {"ok": False, "error": str(exc)}
 
     def toggle_pin(self, pinned: bool) -> dict:
