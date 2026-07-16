@@ -96,7 +96,7 @@ Access all of CodeCrate's core features without leaving your keyboard using the 
 Always know your version control status with zero configuration.
 
 - **Detection**: Checks if your active file belongs to a local Git repository.
-- **Status Bar Indicator**: Displays your active Git branch (e.g., `main`) below the file path.
+- **Status Bar Indicator**: Displays your active Git branch (e.g. `main`) below the file path.
 
 ## Keyboard Shortcuts
 

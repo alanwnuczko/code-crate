@@ -2023,13 +2023,54 @@ window.onNativeDrop = function(res) {
   toast("Opened " + cleanName, "ok");
 };
 
+function _openPathViaBridge(path) {
+  if (!path || !window.pywebview || !window.pywebview.api ||
+      !window.pywebview.api.open_file_by_path) {
+    return;
+  }
+  window.pywebview.api.open_file_by_path(path).then(res => {
+    if (res && res.ok) {
+      if (typeof window.onNativeDrop === "function") {
+        window.onNativeDrop(res);
+      } else {
+        const dir = path.replace(/[\/\\][^\/\\]+$/, "");
+        const cleanName = _stripExtension(res.filename || "untitled", res.language || "text");
+        createTab(cleanName, res.language || "text", res.code, dir || "");
+        toast("Opened " + cleanName, "ok");
+      }
+    }
+  }).catch(() => {});
+}
+
+function _claimNativeDropsFromPython() {
+  if (!window.pywebview || !window.pywebview.api) return;
+  const claim = window.pywebview.api.claim_native_drops;
+  if (!claim) return;
+  let attempts = 0;
+  const tryClaim = () => {
+    attempts += 1;
+    Promise.resolve(claim.call(window.pywebview.api)).then(paths => {
+      if (paths && paths.length) {
+        paths.forEach(p => {
+          if (typeof p === "string" && p) _openPathViaBridge(p);
+        });
+        return;
+      }
+      if (attempts < 4) setTimeout(tryClaim, 60);
+    }).catch(() => {
+      if (attempts < 4) setTimeout(tryClaim, 60);
+    });
+  };
+  setTimeout(tryClaim, 40);
+}
+
 window.addEventListener("drop", (e) => {
   e.preventDefault();
   const ew = document.getElementById("editor-wrap");
   if (ew) ew.classList.remove("drag-over");
 
-
   const dt = e.dataTransfer;
+
   if (dt && dt.files && dt.files.length > 0 &&
       window.chrome && window.chrome.webview &&
       typeof window.chrome.webview.postMessageWithAdditionalObjects === "function") {
@@ -2038,8 +2079,34 @@ window.addEventListener("drop", (e) => {
     } catch (_) {}
   }
 
+  const uriList = dt && (dt.getData("text/uri-list") || dt.getData("text/plain") || "");
+  if (uriList) {
+    const uris = uriList.split(/[\r\n]+/)
+      .map(u => u.trim())
+      .filter(u => u && !u.startsWith("#") && (u.startsWith("file:") || u.startsWith("/")));
+    if (uris.length > 0 && window.pywebview && window.pywebview.api &&
+        window.pywebview.api.open_file_by_path) {
+      uris.forEach(uri => {
+        let path = uri;
+        if (uri.startsWith("file:")) {
+          try {
+            path = decodeURIComponent(new URL(uri).pathname);
+          } catch (_) {
+            path = decodeURIComponent(uri.replace(/^file:\/\//, "").replace(/^localhost/, ""));
+            if (!path.startsWith("/")) path = "/" + path;
+          }
+        }
+        _openPathViaBridge(path);
+      });
+      return;
+    }
+  }
+
   const files = dt && dt.files;
-  if (!files || files.length === 0) return;
+  if (!files || files.length === 0) {
+    _claimNativeDropsFromPython();
+    return;
+  }
 
   function _readAndCreateTab(file, filename, lang, dir) {
     const reader = new FileReader();
@@ -2058,7 +2125,7 @@ window.addEventListener("drop", (e) => {
   Array.from(files).forEach(file => {
     const filename = file.name || "untitled";
     const lang = _detectLangFromFilename(filename);
-    const initialDir = (file.path || file._path || file.webkitRelativePath || "").replace(/[\\/][^\\/]+$/, "");
+    const initialDir = (file.path || file._path || file.webkitRelativePath || "").replace(/[\/\\][^\/\\]+$/, "");
 
     setTimeout(() => {
       if (window.__lastNativeDropFilename === (filename.replace(/\.[^/.]+$/, "") || filename) || window.__lastNativeDropFilename === filename) {
@@ -2072,20 +2139,20 @@ window.addEventListener("drop", (e) => {
             if (window.pywebview.api.open_file_by_path) {
               window.pywebview.api.open_file_by_path(fullPath).then(res => {
                 if (res && res.ok) {
-                  const dir = fullPath.replace(/[\\/][^\\/]+$/, "");
+                  const dir = fullPath.replace(/[\/\\][^\/\\]+$/, "");
                   const cleanName = _stripExtension(res.filename || filename, res.language || lang);
                   createTab(cleanName, res.language || lang, res.code, dir || "");
                   toast("Opened " + cleanName, "ok");
                 } else {
-                  const dir = fullPath.replace(/[\\/][^\\/]+$/, "");
+                  const dir = fullPath.replace(/[\/\\][^\/\\]+$/, "");
                   _readAndCreateTab(file, filename, lang, dir);
                 }
               }).catch(() => {
-                const dir = fullPath.replace(/[\\/][^\\/]+$/, "");
+                const dir = fullPath.replace(/[\/\\][^\/\\]+$/, "");
                 _readAndCreateTab(file, filename, lang, dir);
               });
             } else {
-              const dir = fullPath.replace(/[\\/][^\\/]+$/, "");
+              const dir = fullPath.replace(/[\/\\][^\/\\]+$/, "");
               _readAndCreateTab(file, filename, lang, dir);
             }
           } else {

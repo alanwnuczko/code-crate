@@ -232,7 +232,6 @@ class Bridge:
             return {"ok": False, "error": f"Parent folder not found: {parent}"}
 
         base_name = (name or "code-crate").strip()
-        # Basic sanitization for folder name
         base_name = "".join(c for c in base_name if c.isalnum() or c in (" ", "-", "_", ".")).strip()
         if not base_name:
             base_name = "code-crate"
