@@ -103,7 +103,7 @@ def _install_drag_filter(hwnd: int, topbar_px: int = _drag_zone_px,
 
     def _proc(h, msg, wp, lp):
         global _pending_repin_hwnd
-        if msg == 0x0233:  # WM_DROPFILES
+        if msg == 0x0233:
             try:
                 hdrop = wp
                 count = ctypes.windll.shell32.DragQueryFileW(hdrop, 0xFFFFFFFF, None, 0)

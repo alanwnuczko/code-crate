@@ -52,9 +52,26 @@ class Bridge:
     def __init__(self, state_path: str):
         self._state_path = state_path
         self._drag_origin = None
+        self._pending_drop_paths = []
+        self._recently_opened_drop_paths = {}
 
     def set_window(self, window):
         self._window = window
+
+    def _note_drop_opened(self, path: str) -> bool:
+        import time
+        now = time.time()
+        for p, t in list(self._recently_opened_drop_paths.items()):
+            if now - t > 2.0:
+                self._recently_opened_drop_paths.pop(p, None)
+        if path in self._recently_opened_drop_paths:
+            return False
+        self._recently_opened_drop_paths[path] = now
+        try:
+            self._pending_drop_paths = [p for p in self._pending_drop_paths if p != path]
+        except Exception:
+            pass
+        return True
 
     def start_drag(self, screen_x, screen_y) -> None:
         if not self._window:
@@ -164,12 +181,49 @@ class Bridge:
                 if raw_name == target or unquoted_name == target:
                     paths.remove(item)
                     full_p = str(item[1]).strip()
-                    if full_p.startswith("file://"):
-                        full_p = full_p.replace("file://", "")
-                    return urllib.parse.unquote(full_p).strip()
+                    if full_p.startswith("file:"):
+                        parsed = urllib.parse.urlparse(full_p)
+                        full_p = urllib.parse.unquote(parsed.path or "")
+                    else:
+                        full_p = urllib.parse.unquote(full_p).strip()
+                    return full_p
         except Exception as e:
             print(f"[bridge] get_dropped_file_path error: {e}")
         return ""
+
+    def claim_native_drops(self) -> list:
+        claimed = []
+        try:
+            pending = getattr(self, "_pending_drop_paths", None)
+            if pending:
+                for p in list(pending):
+                    if p and os.path.isfile(p) and self._note_drop_opened(p):
+                        claimed.append(p)
+                self._pending_drop_paths = []
+        except Exception as e:
+            print(f"[bridge] claim_native_drops pending error: {e}")
+
+        try:
+            import urllib.parse, webview.dom
+            dnd_paths = webview.dom._dnd_state.get("paths", [])
+            for item in list(dnd_paths):
+                try:
+                    full_p = str(item[1]).strip()
+                    if full_p.startswith("file:"):
+                        parsed = urllib.parse.urlparse(full_p)
+                        full_p = urllib.parse.unquote(parsed.path or "")
+                    else:
+                        full_p = urllib.parse.unquote(full_p)
+                    if full_p and os.path.isfile(full_p) and full_p not in claimed:
+                        if self._note_drop_opened(full_p):
+                            claimed.append(full_p)
+                    dnd_paths.remove(item)
+                except Exception:
+                    continue
+        except Exception as e:
+            print(f"[bridge] claim_native_drops dnd_state error: {e}")
+
+        return claimed
 
     def load_note(self) -> dict:
         if not os.path.exists(self._state_path) or os.path.getsize(self._state_path) == 0:
@@ -219,7 +273,6 @@ class Bridge:
             return {"ok": False, "error": f"Parent folder not found: {parent}"}
 
         base_name = (name or "code-crate").strip()
-        # Basic sanitization for folder name
         base_name = "".join(c for c in base_name if c.isalnum() or c in (" ", "-", "_", ".")).strip()
         if not base_name:
             base_name = "code-crate"
