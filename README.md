@@ -265,3 +265,7 @@ pyinstaller --noconfirm --onedir \
   --hidden-import pystray._gtk \
   "Linux/main.py"
 ```
+
+## LICENSE
+
+MIT - see [LICENSE](LICENSE)
