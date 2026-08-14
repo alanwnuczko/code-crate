@@ -4,6 +4,5 @@ Windows/__pycache__/
 .idea/
 .venv/
 state.json
-codecrate.spec
 dist/
 build/
