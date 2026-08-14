@@ -19,7 +19,7 @@
 
 | Platform | Version | Download |
 |----------|----------|----------|
-| Windows 11 | v2.2 | [CodeCrateWindows.zip](https://github.com/alanwnuczko/code-crate/releases/tag/v2.2) |
+| Windows 11 | v2.3 | [CodeCrateWindows.zip](https://github.com/alanwnuczko/code-crate/releases/tag/v2.3) |
 | Linux | v2.2 | [CodeCrateLinux.tar.xz](https://github.com/alanwnuczko/code-crate/releases/tag/v2.2) |
 
 ## System requirements
@@ -223,14 +223,7 @@ pip install pyinstaller pywebview pystray pillow pywin32
 
 **2. Run PyInstaller**
 ```powershell
-pyinstaller --noconfirm --onedir --windowed `
-  --name "CodeCrate" `
-  --icon "assets/tray.ico" `
-  --add-data "Windows/index.html;Windows" `
-  --add-data "assets;assets" `
-  --add-data "css;css" `
-  --add-data "js;js" `
-  "Windows/main.py"
+pyinstaller --noconfirm CodeCrate.spec
 ```
 
 ### Building on Linux
