@@ -19,7 +19,7 @@
 
 | Platform | Version | Download |
 |----------|----------|----------|
-| Windows 11 | v2.3 | [CodeCrateWindows.zip](https://github.com/alanwnuczko/code-crate/releases/tag/v2.3) |
+| Windows 11 | v2.4 | [CodeCrateWindows.zip](https://github.com/alanwnuczko/code-crate/releases/tag/v2.4) |
 | Linux | v2.2 | [CodeCrateLinux.tar.xz](https://github.com/alanwnuczko/code-crate/releases/tag/v2.2) |
 
 ## System requirements
