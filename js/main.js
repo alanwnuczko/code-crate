@@ -953,6 +953,8 @@ function renderTabs() {
   tabs.forEach(tab => {
     const el = document.createElement("div");
     el.className = "doc-tab" + (tab.id === activeTabId ? " active" : "");
+    el.dataset.tabId = tab.id;
+    el.draggable = true;
     el.onclick = (e) => {
       if (e.target.closest(".doc-tab-close")) return;
       switchTab(tab.id);
@@ -982,7 +984,107 @@ function renderTabs() {
   newBtn.title = "New tab (Ctrl+T)";
   newBtn.onclick = () => createTab();
   bar.appendChild(newBtn);
+
 }
+
+let _tabDragSrcId = null;
+let _tabDragIndicator = null;
+
+function _setupTabDragging() {
+  const bar = document.getElementById("tabbar");
+  if (!bar) return;
+
+  function _getIndicator() {
+    if (!_tabDragIndicator || !bar.contains(_tabDragIndicator)) {
+      _tabDragIndicator = document.createElement("div");
+      _tabDragIndicator.className = "tab-drop-indicator";
+      bar.appendChild(_tabDragIndicator);
+    }
+    return _tabDragIndicator;
+  }
+
+  function _removeIndicator() {
+    if (_tabDragIndicator && bar.contains(_tabDragIndicator)) {
+      bar.removeChild(_tabDragIndicator);
+    }
+    _tabDragIndicator = null;
+  }
+
+  function _tabEls() {
+    return Array.from(bar.querySelectorAll(".doc-tab"));
+  }
+
+  function _dropIndexFromX(clientX) {
+    const tabEls = _tabEls();
+    for (let i = 0; i < tabEls.length; i++) {
+      const rect = tabEls[i].getBoundingClientRect();
+      if (clientX < rect.left + rect.width / 2) return i;
+    }
+    return tabEls.length;
+  }
+
+  function _positionIndicator(dropIndex) {
+    const ind = _getIndicator();
+    const tabEls = _tabEls();
+    if (tabEls.length === 0) return;
+    const refEl = dropIndex < tabEls.length ? tabEls[dropIndex] : tabEls[tabEls.length - 1];
+    const side  = dropIndex < tabEls.length ? "left" : "right";
+    const barRect = bar.getBoundingClientRect();
+    const refRect = refEl.getBoundingClientRect();
+    const x = (side === "left" ? refRect.left : refRect.right) - barRect.left + bar.scrollLeft;
+    ind.style.left = (x - 1) + "px";
+  }
+
+  bar.addEventListener("dragstart", (e) => {
+    const tab = e.target.closest(".doc-tab");
+    if (!tab) return;
+    _tabDragSrcId = parseInt(tab.dataset.tabId, 10);
+    tab.classList.add("tab-dragging");
+    e.dataTransfer.effectAllowed = "move";
+    e.dataTransfer.setData("text/plain", _tabDragSrcId);
+  });
+
+  bar.addEventListener("dragend", (e) => {
+    const tab = e.target.closest(".doc-tab");
+    if (tab) tab.classList.remove("tab-dragging");
+    _removeIndicator();
+    _tabDragSrcId = null;
+  });
+
+  bar.addEventListener("dragover", (e) => {
+    if (_tabDragSrcId === null) return;
+    e.preventDefault();
+    e.dataTransfer.dropEffect = "move";
+    _positionIndicator(_dropIndexFromX(e.clientX));
+  });
+
+  bar.addEventListener("dragleave", (e) => {
+    if (!bar.contains(e.relatedTarget)) _removeIndicator();
+  });
+
+  bar.addEventListener("drop", (e) => {
+    e.preventDefault();
+    _removeIndicator();
+    const srcId = _tabDragSrcId;
+    _tabDragSrcId = null;
+    if (srcId === null) return;
+
+    const dropIndex = _dropIndexFromX(e.clientX);
+    const srcIndex  = tabs.findIndex(t => t.id === srcId);
+    if (srcIndex === -1) return;
+
+    let destIndex = dropIndex;
+    if (srcIndex < destIndex) destIndex--;
+    if (srcIndex === destIndex) return;
+
+    const [moved] = tabs.splice(srcIndex, 1);
+    tabs.splice(destIndex, 0, moved);
+
+    renderTabs();
+    _persistState();
+  });
+}
+
 
 function switchTab(id) {
   if (activeTabId === id && !isSwitchingTab) return;
@@ -1793,7 +1895,7 @@ function _setupWindowDragging() {
     if (!el) return;
     el.addEventListener("mousedown", (e) => {
       if (e.button !== 0) return;
-      if (e.target.closest("button, input, select, option, .doc-ext-wrapper, .theme-dropdown-wrap, .custom-dropdown-menu, .path-input-wrap")) return;
+      if (e.target.closest("button, input, select, option, .doc-ext-wrapper, .theme-dropdown-wrap, .custom-dropdown-menu, .path-input-wrap, .doc-tab")) return;
       isDragging = true;
       lastX = e.screenX;
       lastY = e.screenY;
@@ -1811,6 +1913,7 @@ _setupWindowDragging();
 onLangChange("javascript", false);
 window.addEventListener("pywebviewready", _loadState);
 if (!window.pywebview) setTimeout(_loadState, 60);
+_setupTabDragging();
 
 const COMMAND_PALETTE_ITEMS = [
   { title: "New Document Tab", category: "Tab", action: () => newFile() },
@@ -1996,6 +2099,8 @@ function _detectLangFromFilename(filename) {
 }
 
 window.addEventListener("dragover", (e) => {
+  const types = e.dataTransfer && e.dataTransfer.types;
+  if (!types || !Array.from(types).includes("Files")) return;
   e.preventDefault();
   e.stopPropagation();
   if (e.dataTransfer) e.dataTransfer.dropEffect = "copy";
@@ -2004,6 +2109,8 @@ window.addEventListener("dragover", (e) => {
 }, true);
 
 window.addEventListener("dragleave", (e) => {
+  const types = e.dataTransfer && e.dataTransfer.types;
+  if (!types || !Array.from(types).includes("Files")) return;
   e.preventDefault();
   e.stopPropagation();
   if (e.relatedTarget === null || e.target === document.documentElement) {
@@ -2065,12 +2172,13 @@ function _claimNativeDropsFromPython() {
 }
 
 window.addEventListener("drop", (e) => {
+  const types = e.dataTransfer && e.dataTransfer.types;
+  if (!types || !Array.from(types).includes("Files")) return;
   e.preventDefault();
   const ew = document.getElementById("editor-wrap");
   if (ew) ew.classList.remove("drag-over");
 
   const dt = e.dataTransfer;
-
   if (dt && dt.files && dt.files.length > 0 &&
       window.chrome && window.chrome.webview &&
       typeof window.chrome.webview.postMessageWithAdditionalObjects === "function") {
