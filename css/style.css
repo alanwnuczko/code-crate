@@ -899,6 +899,7 @@ html, body {
   flex-shrink: 0;
   user-select: none;
   scrollbar-width: none;
+  position: relative;
 }
 .doc-tab-bar::-webkit-scrollbar {
   display: none;
@@ -1000,6 +1001,22 @@ html, body {
   background: var(--hover-fill);
   color: var(--txt-2);
 }
+
+.doc-tab.tab-dragging {
+  opacity: 0.4;
+  cursor: grabbing;
+}
+
+.tab-drop-indicator {
+  position: absolute;
+  top: 0;
+  width: 2px;
+  height: 100%;
+  background: var(--txt-2);
+  pointer-events: none;
+  z-index: calc(var(--z-sticky) + 1);
+}
+
 
 
 .tech-footer {
