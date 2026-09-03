@@ -1,0 +1,134 @@
+name: Release
+
+# Push a tag like v2.5 to build both platforms and attach:
+#   CodeCrateWindows.zip
+#   CodeCrateLinux.tar.xz
+# to a GitHub Release. You can also run this workflow manually from the
+# Actions tab to produce downloadable artifacts without creating a release.
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Build (${{ matrix.platform }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: windows
+            os: windows-latest
+            artifact: CodeCrateWindows.zip
+          # Ubuntu 22.04 keeps glibc old enough for the README's
+          # Ubuntu 22.04+ / Debian 12+ runtime. GitHub starts retiring
+          # this image in 2026; switch to ubuntu-24.04 if it disappears.
+          - platform: linux
+            os: ubuntu-22.04
+            artifact: CodeCrateLinux.tar.xz
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install Linux system packages
+        if: matrix.platform == 'linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            python3-gi \
+            python3-gi-cairo \
+            gir1.2-gtk-3.0 \
+            gir1.2-webkit2-4.1 \
+            gir1.2-ayatanaappindicator3-0.1 \
+            libgirepository1.0-dev \
+            gcc \
+            libcairo2-dev \
+            pkg-config \
+            python3-dev \
+            xz-utils
+
+      - name: Install Python dependencies (Windows)
+        if: matrix.platform == 'windows'
+        run: |
+          python -m pip install --upgrade pip
+          pip install pyinstaller pywebview pystray pillow pywin32
+
+      - name: Install Python dependencies (Linux)
+        if: matrix.platform == 'linux'
+        run: |
+          python -m pip install --upgrade pip
+          # PyGObject 3.52+ needs girepository-2.0, which Ubuntu 22.04 does not ship.
+          pip install pyinstaller pywebview pystray pillow "pygobject<3.52" pycairo
+
+      - name: Build (Windows)
+        if: matrix.platform == 'windows'
+        run: pyinstaller --noconfirm CodeCrate.spec
+
+      - name: Build (Linux)
+        if: matrix.platform == 'linux'
+        run: |
+          pyinstaller --noconfirm --onedir \
+            --name "CodeCrate" \
+            --icon "assets/tray.ico" \
+            --add-data "Linux/index.html:Linux" \
+            --add-data "assets:assets" \
+            --add-data "css:css" \
+            --add-data "js:js" \
+            --collect-all gi \
+            --collect-all webview \
+            --collect-all pystray \
+            --hidden-import gi.repository.Gtk \
+            --hidden-import gi.repository.Gdk \
+            --hidden-import gi.repository.WebKit2 \
+            --hidden-import gi.repository.GLib \
+            --hidden-import pystray._gtk \
+            "Linux/main.py"
+
+      - name: Package (Windows)
+        if: matrix.platform == 'windows'
+        shell: pwsh
+        run: Compress-Archive -Path dist\CodeCrate -DestinationPath CodeCrateWindows.zip
+
+      - name: Package (Linux)
+        if: matrix.platform == 'linux'
+        run: tar -cJf CodeCrateLinux.tar.xz -C dist CodeCrate
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.artifact }}
+          path: ${{ matrix.artifact }}
+          if-no-files-found: error
+          compression-level: 0
+
+  release:
+    name: GitHub Release
+    needs: build
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Download artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: dist-artifacts
+          merge-multiple: true
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: dist-artifacts/*
+          generate_release_notes: true
+          fail_on_unmatched_files: true
